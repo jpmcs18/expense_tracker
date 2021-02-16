@@ -253,6 +253,7 @@ class _ExpensesState extends State<Expenses> {
     setState(() {
       _expenses.add(expense);
       _selectedExpense = Expense();
+      _ctrlTitle.clear();
     });
     _ctrlPage.jumpToPage(0);
   }
@@ -285,6 +286,10 @@ class _ExpensesState extends State<Expenses> {
     setState(() {
       _expenseDetails.add(expenseDetail);
       _selectedExpenseDetail = ExpenseDetails();
+      _ctrlDate.clear();
+      _ctrlQuantity.clear();
+      _ctrlPrice.clear();
+      _ctrlTotal.clear();
     });
     _ctrlPage.jumpToPage(2);
   }
