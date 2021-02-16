@@ -39,7 +39,7 @@ class _ExpensesState extends State<Expenses> {
       padding: EdgeInsets.all(3),
       child: PageView(
         controller: _ctrlPage,
-        allowImplicitScrolling: false,
+        physics: NeverScrollableScrollPhysics(),
         children: [
           //Expense
           Scaffold(
@@ -65,10 +65,7 @@ class _ExpensesState extends State<Expenses> {
                           ),
                         ),
                         onTap: () {
-                          setState(() {
-                            _selectedExpense = _expenses[index];
-                          });
-                          _ctrlPage.jumpToPage(2);
+                          _selectExpenses(_expenses[index]);
                         },
                       ),
                     );
@@ -209,6 +206,21 @@ class _ExpensesState extends State<Expenses> {
     });
   }
 
+  _selectExpenses(Expense expense) async {
+    setState(() {
+      _selectedExpense = expense;
+    });
+    await _getExpenseDetails();
+    _ctrlPage.jumpToPage(2);
+  }
+
+  _getExpenseDetails() async {
+    var ed = await db.getExpenseDetails(_selectedExpense.id);
+    setState(() {
+      _expenseDetails = ed;
+    });
+  }
+
   _setItemToDropDownItems() async {
     List<DropdownMenuItem<Item>> dditem = [];
     var items = await db.getItems();
@@ -228,7 +240,6 @@ class _ExpensesState extends State<Expenses> {
     var expenses = await db.getExpenses();
     setState(() {
       _expenses = expenses;
-      _totalExpenses = _expenses.fold(0, (t, p) => t + p.totalPrice);
     });
   }
 
@@ -277,5 +288,4 @@ class _ExpensesState extends State<Expenses> {
     });
     _ctrlPage.jumpToPage(2);
   }
-
 }

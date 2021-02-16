@@ -11,7 +11,7 @@ import '../models/expense_details.dart';
 
 class MainDB {
   static const _dbName = 'expense_tracker.db';
-  static const _version = 2;
+  static const _version = 3;
 
   MainDB._();
   static final MainDB instance = MainDB._();
@@ -30,13 +30,7 @@ class MainDB {
   }
 
   _onUpgrade(db, int oldVersion, int newVersion) async {
-    await db.execute('''
-      CREATE TABLE ${Item.tblName} (
-        ${Item.colId} INTEGER PRIMARY KEY AUTOINCREMENT,
-        ${Item.colItemTypeId} INTEGER NOT NULL,
-        ${Item.colDescription} TEXT NOT NULL
-      )
-    ''');
+
   }
 
   _onCreate(Database db, int version) async {
@@ -200,7 +194,7 @@ class MainDB {
   //EXPENSE DETAILS MANAGEMENT
   Future<List<ExpenseDetails>> getExpenseDetails(int expenseId) async {
     Database d = await db;
-    List<Map> res = await d.query(Expense.tblName, where: '${ExpenseDetails.colExpenseId} = ?', whereArgs: [
+    List<Map> res = await d.query(ExpenseDetails.tblName, where: '${ExpenseDetails.colExpenseId} = ?', whereArgs: [
       expenseId
     ]);
     List<ExpenseDetails> exps = [];

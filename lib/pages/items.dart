@@ -28,7 +28,7 @@ class _ItemsState extends State<Items> {
     return Container(
         margin: EdgeInsets.all(3),
         child: PageView(
-          allowImplicitScrolling: false,
+        physics: NeverScrollableScrollPhysics(),
           controller: _ctrlPage,
           children: [
             Scaffold(

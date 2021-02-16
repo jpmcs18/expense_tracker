@@ -34,6 +34,7 @@ class Expense {
   Expense.fromMap(Map<String, dynamic> map) {
     id = map[colId];
     title = map[colTitle];
+    print('expense id : ${id}');
   }
 
   Map<String, dynamic> toMap() {
