@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import './models/menu.dart';
 import './pages/items.dart';
 import './pages/expenses.dart';
+import './pages/item_type.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -13,6 +14,7 @@ class _HomePageState extends State<HomePage> {
   String _title = '';
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   List<Menu> _menuItems = [
+    Menu(location: 'Item Type', view: ItemTypes()),
     Menu(location: 'Items', view: Items()),
     Menu(location: 'Expenses', view: Expenses()),
   ];
