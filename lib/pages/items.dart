@@ -1,6 +1,7 @@
 import 'package:expense_tracker/databases/main_db.dart';
 import 'package:flutter/material.dart';
 import '../models/item.dart';
+import '../models/item_type.dart';
 
 class Items extends StatefulWidget {
   @override
@@ -10,14 +11,15 @@ class Items extends StatefulWidget {
 class _ItemsState extends State<Items> {
   MainDB db = MainDB.instance;
   List<Item> _items = [];
-  Item _item = Item('');
-  final _ctrlSearch = TextEditingController();
+  List<DropdownMenuItem<ItemType>> _dropDownItemTypes = [];
+  Item _item = Item();
   final _ctrlItemDesc = TextEditingController();
   final _ctrlPage = PageController(initialPage: 0);
 
   @override
   void initState() {
     super.initState();
+    _setItemTypeToDropDownItemTypes();
     _getItems();
   }
 
@@ -39,24 +41,6 @@ class _ItemsState extends State<Items> {
                 body: Container(
                   child: Column(
                     children: [
-                      // Card(
-                      //     child: Padding(
-                      //   padding: EdgeInsets.all(10),
-                      //   child: Row(
-                      //     children: [
-                      //       Expanded(
-                      //           child: TextField(
-                      //         decoration: InputDecoration(labelText: 'Search'),
-                      //         controller: _ctrlSearch,
-                      //       )),
-                      //       IconButton(
-                      //           icon: Icon(Icons.search),
-                      //           onPressed: () {
-                      //             _searchItems();
-                      //           }),
-                      //     ],
-                      //   ),
-                      // )),
                       Expanded(
                           child: Card(
                               child: ListView.builder(
@@ -65,6 +49,7 @@ class _ItemsState extends State<Items> {
                           return Card(
                               child: ListTile(
                             title: Text(_items[index].description),
+                            subtitle: Text(_items[index].itemType.description),
                             trailing: Row(
                               mainAxisSize: MainAxisSize.min,
                               mainAxisAlignment: MainAxisAlignment.end,
@@ -93,6 +78,13 @@ class _ItemsState extends State<Items> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
+                  DropdownButtonFormField(
+                    items: _dropDownItemTypes,
+                    value: _item.itemType,
+                    onChanged: _selectItemType,
+                    isExpanded: true,
+                    decoration: InputDecoration(labelText: 'Item'),
+                  ),
                   TextField(
                     controller: _ctrlItemDesc,
                     decoration: InputDecoration(labelText: 'Item Description'),
@@ -110,9 +102,27 @@ class _ItemsState extends State<Items> {
         ));
   }
 
-  // _searchItems() {
-  //   print(_ctrlSearch.text);
-  // }
+  _setItemTypeToDropDownItemTypes() async {
+    List<DropdownMenuItem<ItemType>> dditemType = [];
+    var itemTypes = await db.getItemTypes();
+    for (var itemType in itemTypes) {
+      dditemType.add(DropdownMenuItem(
+        child: Text(itemType.description),
+        value: itemType,
+      ));
+    }
+
+    setState(() {
+      _dropDownItemTypes = dditemType;
+    });
+  }
+
+  _selectItemType(ItemType itemType) {
+    setState(() {
+      _item.itemType = itemType;
+      _item.itemTypeId = itemType.id;
+    });
+  }
 
   _addItem() {
     _ctrlPage.jumpToPage(1);
@@ -164,7 +174,7 @@ class _ItemsState extends State<Items> {
 
   _clearData() {
     setState(() {
-      _item = Item('');
+      _item = Item();
       _ctrlItemDesc.clear();
     });
   }

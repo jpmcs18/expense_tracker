@@ -1,55 +1,44 @@
 import 'package:intl/intl.dart';
-import './item.dart';
 
 class Expense {
   static const tblName = 'expense';
   static const colId = 'id';
-  static const colDate = 'date';
-  static const colQuantity = 'quantity';
-  static const colPrice = 'price';
-  static const colItemId = 'itemid';
+  static const colTitle = 'title';
 
   int id;
-  DateTime date;
-  int quantity;
-  num price;
-  int itemId;
-  Item item;
-  String get formatedDate {
-    return DateFormat("yyyy-MM-dd HH:mm").format(date);
+  String title;
+  DateTime dateFrom;
+  DateTime dateTo;
+  num totalPrice;
+
+  String get formatedDateFrom {
+    return DateFormat.yMMMMd('en_US').format(dateFrom);
+  }
+
+  String get formatedDateTo {
+    return DateFormat.yMMMMd('en_US').format(dateTo);
   }
 
   String get formatedTotalPrice {
-    return NumberFormat.currency().format(totalPrice);
-  }
-
-  num get totalPrice {
-    return price * quantity;
+    return NumberFormat('#,###,##0.00').format(totalPrice);
   }
 
   Expense() {
     id = null;
-    date = DateTime.now();
-    quantity = 0;
-    price = 0;
-    itemId = null;
-    item = null;
+    title = '';
+    dateFrom = null;
+    dateTo = null;
+    totalPrice = 0;
   }
 
   Expense.fromMap(Map<String, dynamic> map) {
     id = map[colId];
-    quantity = map[colQuantity];
-    price = map[colPrice];
-    itemId = map[colItemId];
-    date = DateTime.parse(map[colDate]);
+    title = map[colTitle];
   }
 
   Map<String, dynamic> toMap() {
     var map = <String, dynamic>{
-      colQuantity: quantity,
-      colPrice: price,
-      colItemId: itemId,
-      colDate: formatedDate,
+      colTitle: title,
     };
     if (id != null) map[colId] = id;
     return map;

@@ -5,11 +5,13 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
 import '../models/item.dart';
+import '../models/item_type.dart';
 import '../models/expense.dart';
+import '../models/expense_details.dart';
 
 class MainDB {
   static const _dbName = 'expense_tracker.db';
-  static const _version = 7;
+  static const _version = 2;
 
   MainDB._();
   static final MainDB instance = MainDB._();
@@ -27,36 +29,102 @@ class MainDB {
     return await openDatabase(dbPath, version: _version, onCreate: _onCreate, onUpgrade: _onUpgrade);
   }
 
-  _onUpgrade(db, int oldVersion, int newVersion) {
-    // If you need to add a column
-    if (newVersion > oldVersion) {
-      db.execute("ALTER TABLE ${Expense.tblName} ADD COLUMN ${Expense.colDate} TEXT NULL");
-    }
-  }
-
-  _onCreate(Database database, int version) async {
-    await database.execute('''
+  _onUpgrade(db, int oldVersion, int newVersion) async {
+    await db.execute('''
       CREATE TABLE ${Item.tblName} (
         ${Item.colId} INTEGER PRIMARY KEY AUTOINCREMENT,
+        ${Item.colItemTypeId} INTEGER NOT NULL,
+        ${Item.colDescription} TEXT NOT NULL
+      )
+    ''');
+  }
+
+  _onCreate(Database db, int version) async {
+    await db.execute('''
+      CREATE TABLE ${ItemType.tblName} (
+        ${ItemType.colId} INTEGER PRIMARY KEY AUTOINCREMENT,
+        ${ItemType.colDescription} TEXT NOT NULL
+      )
+    ''');
+
+    await db.execute('''
+      CREATE TABLE ${Item.tblName} (
+        ${Item.colId} INTEGER PRIMARY KEY AUTOINCREMENT,
+        ${Item.colItemTypeId} INTEGER NOT NULL,
         ${Item.colDescription} TEXT NOT NULL
       )
     ''');
 
-    await database.execute('''
+    await db.execute('''
       CREATE TABLE ${Expense.tblName} (
         ${Expense.colId} INTEGER PRIMARY KEY AUTOINCREMENT,
-        ${Expense.colDate} TEXT NOT NULL,
-        ${Expense.colItemId} INTEGER NOT NULL,
-        ${Expense.colQuantity} INTEGER NOT NULL,
-        ${Expense.colPrice} REAL NOT NULL
+        ${Expense.colTitle} TEXT NOT NULL
+      )
+    ''');
+
+    await db.execute('''
+      CREATE TABLE ${ExpenseDetails.tblName} (
+        ${ExpenseDetails.colId} INTEGER PRIMARY KEY AUTOINCREMENT,
+        ${ExpenseDetails.colDate} TEXT NOT NULL,
+        ${ExpenseDetails.colQuantity} INTEGER NOT NULL,
+        ${ExpenseDetails.colPrice} REAL NOT NULL,
+        ${ExpenseDetails.colItemId} INTEGER NOT NULL,
+        ${ExpenseDetails.colExpenseId} INTEGER NOT NULL
       )
     ''');
   }
 
+  //ITEM TYPES MANAGEMENT
+  Future<List<ItemType>> getItemTypes() async {
+    Database d = await db;
+    List<Map> res = await d.query(ItemType.tblName);
+    return res.length == 0 ? [] : res.map((e) => ItemType.fromMap(e)).toList();
+  }
+
+  Future<ItemType> getItemType(int id) async {
+    Database d = await db;
+    return await _getItemType(d, id);
+  }
+
+  Future<ItemType> _getItemType(Database d, int id) async {
+    List<Map> res = await d.query(ItemType.tblName, where: '${ItemType.colId} = ?', whereArgs: [
+      id
+    ]);
+    return res.length == 0 ? [] : res.map((e) => ItemType.fromMap(e)).first;
+  }
+
+  Future<int> insertItemType(ItemType itemType) async {
+    Database d = await db;
+    return await d.insert(ItemType.tblName, itemType.toMap());
+  }
+
+  Future<int> updateItemType(ItemType itemType) async {
+    Database d = await db;
+    return await d.update(ItemType.tblName, itemType.toMap(), where: '${ItemType.colId} = ?', whereArgs: [
+      itemType.id
+    ]);
+  }
+
+  Future<int> deleteItemType(int id) async {
+    Database d = await db;
+    return await d.delete(ItemType.tblName, where: '${ItemType.colId} = ?', whereArgs: [
+      id
+    ]);
+  }
+  //END ITEM TYPES MANAGEMENT
+
+  //ITEMS MANAGEMENT
   Future<List<Item>> getItems() async {
     Database d = await db;
     List<Map> res = await d.query(Item.tblName);
-    return res.length == 0 ? [] : res.map((e) => Item.fromMap(e)).toList();
+    List<Item> itms = [];
+    if (res.length > 0)
+      for (var r in res) {
+        var i = Item.fromMap(r);
+        i.itemType = await _getItemType(d, i.itemTypeId);
+        itms.add(i);
+      }
+    return res.length == 0 ? [] : itms;
   }
 
   Future<Item> getItem(int id) async {
@@ -68,7 +136,13 @@ class MainDB {
     List<Map> res = await d.query(Item.tblName, where: '${Item.colId} = ?', whereArgs: [
       id
     ]);
-    return res.length == 0 ? [] : res.map((e) => Item.fromMap(e)).first;
+    if (res.length > 0)
+      for (var r in res) {
+        var i = Item.fromMap(r);
+        i.itemType = await _getItemType(d, i.itemTypeId);
+        return i;
+      }
+    return null;
   }
 
   Future<int> insertItem(Item item) async {
@@ -89,7 +163,9 @@ class MainDB {
       id
     ]);
   }
+  //END ITEM MANAGEMENT
 
+  //EXPENSES MANAGEMENT
   Future<List<Expense>> getExpenses() async {
     Database d = await db;
     List<Map> res = await d.query(Expense.tblName);
@@ -97,7 +173,6 @@ class MainDB {
     if (res.length > 0)
       for (var r in res) {
         var ex = Expense.fromMap(r);
-        ex.item = await _getItem(d, ex.itemId);
         exps.add(ex);
       }
     return res.length == 0 ? [] : exps;
@@ -108,10 +183,9 @@ class MainDB {
     List<Map> res = await d.query(Expense.tblName, where: '${Expense.colId} = ?', whereArgs: [
       id
     ]);
-     if (res.length > 0)
+    if (res.length > 0)
       for (var r in res) {
         var ex = Expense.fromMap(r);
-        ex.item = await _getItem(d, ex.itemId);
         return ex;
       }
     return null;
@@ -121,4 +195,41 @@ class MainDB {
     Database d = await db;
     return await d.insert(Expense.tblName, expense.toMap());
   }
+  //END EXPENSES MANAGEMENT
+
+  //EXPENSE DETAILS MANAGEMENT
+  Future<List<ExpenseDetails>> getExpenseDetails(int expenseId) async {
+    Database d = await db;
+    List<Map> res = await d.query(Expense.tblName, where: '${ExpenseDetails.colExpenseId} = ?', whereArgs: [
+      expenseId
+    ]);
+    List<ExpenseDetails> exps = [];
+    if (res.length > 0)
+      for (var r in res) {
+        var ex = ExpenseDetails.fromMap(r);
+        ex.item = await _getItem(d, ex.itemId);
+        exps.add(ex);
+      }
+    return res.length == 0 ? [] : exps;
+  }
+
+  Future<ExpenseDetails> getExpenseDetail(int id) async {
+    Database d = await db;
+    List<Map> res = await d.query(ExpenseDetails.tblName, where: '${ExpenseDetails.colId} = ?', whereArgs: [
+      id
+    ]);
+    if (res.length > 0)
+      for (var r in res) {
+        var ex = ExpenseDetails.fromMap(r);
+        ex.item = await _getItem(d, ex.itemId);
+        return ex;
+      }
+    return null;
+  }
+
+  Future<int> insertExpenseDetails(ExpenseDetails expense) async {
+    Database d = await db;
+    return await d.insert(ExpenseDetails.tblName, expense.toMap());
+  }
+  //END EXPENSE DETAILS MANAGEMENT
 }

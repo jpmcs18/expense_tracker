@@ -1,5 +1,6 @@
 import 'package:expense_tracker/databases/main_db.dart';
 import 'package:expense_tracker/models/expense.dart';
+import 'package:expense_tracker/models/expense_details.dart';
 import 'package:flutter/material.dart';
 import '../models/item.dart';
 
@@ -10,13 +11,16 @@ class Expenses extends StatefulWidget {
 
 class _ExpensesState extends State<Expenses> {
   MainDB db = MainDB.instance;
-  Expense _expense = Expense();
+  Expense _selectedExpense = Expense();
+  ExpenseDetails _selectedExpenseDetail = ExpenseDetails();
   List<Expense> _expenses = [];
+  List<ExpenseDetails> _expenseDetails = [];
   num _totalExpenses = 0;
   List<DropdownMenuItem<Item>> _dropDownItems = [];
   final DateTime _firstDate = DateTime(DateTime.now().year - 1);
   final DateTime _lastDate = DateTime.now();
   final _ctrlPage = PageController(initialPage: 0);
+  final _ctrlTitle = TextEditingController();
   final _ctrlDate = TextEditingController();
   final _ctrlQuantity = TextEditingController();
   final _ctrlPrice = TextEditingController();
@@ -35,7 +39,9 @@ class _ExpensesState extends State<Expenses> {
       padding: EdgeInsets.all(3),
       child: PageView(
         controller: _ctrlPage,
+        allowImplicitScrolling: false,
         children: [
+          //Expense
           Scaffold(
             floatingActionButton: FloatingActionButton(
               onPressed: () {
@@ -54,12 +60,16 @@ class _ExpensesState extends State<Expenses> {
                         title: Container(
                           child: Row(
                             children: [
-                              Expanded(child: Text(_expenses[index].item.description)),
-                              Text(_expenses[index].formatedTotalPrice)
+                              Expanded(child: Text(_expenses[index].title))
                             ],
                           ),
                         ),
-                        subtitle: Text(_expenses[index].formatedDate),
+                        onTap: () {
+                          setState(() {
+                            _selectedExpense = _expenses[index];
+                          });
+                          _ctrlPage.jumpToPage(2);
+                        },
                       ),
                     );
                   },
@@ -67,6 +77,72 @@ class _ExpensesState extends State<Expenses> {
               ),
             ),
           ),
+          //Management Of Expense
+          Card(
+            child: Container(
+              margin: EdgeInsets.all(5),
+              child: Column(
+                children: [
+                  TextFormField(
+                    decoration: InputDecoration(labelText: 'Title'),
+                    controller: _ctrlTitle,
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedExpense.title = value;
+                      });
+                    },
+                  ),
+                  RaisedButton(
+                      child: Text(_selectedExpense.id == null ? 'Insert' : 'Update'),
+                      onPressed: () {
+                        _saveExpenses();
+                      })
+                ],
+              ),
+            ),
+          ),
+          //Expense Details
+          Scaffold(
+            floatingActionButton: FloatingActionButton(
+              onPressed: () {
+                _addExpenseDetails();
+              },
+              child: Icon(Icons.add),
+            ),
+            bottomNavigationBar: RaisedButton(
+              child: Text('Back'),
+              onPressed: () {
+                setState(() {
+                  _selectedExpense = Expense();
+                });
+                _ctrlPage.jumpToPage(0);
+              },
+            ),
+            body: Card(
+              child: Container(
+                margin: EdgeInsets.all(5),
+                child: ListView.builder(
+                  itemCount: _expenseDetails.length,
+                  itemBuilder: (context, index) {
+                    return Card(
+                      child: ListTile(
+                        title: Container(
+                          child: Row(
+                            children: [
+                              Expanded(child: Text(_expenseDetails[index].item.description)),
+                              Text(_expenseDetails[index].formatedTotalPrice)
+                            ],
+                          ),
+                        ),
+                        subtitle: Text(_expenseDetails[index].formatedDate),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ),
+          ),
+          //Management Of Expense Details
           Card(
             child: Container(
               margin: EdgeInsets.all(5),
@@ -82,7 +158,7 @@ class _ExpensesState extends State<Expenses> {
                   ),
                   DropdownButtonFormField(
                     items: _dropDownItems,
-                    value: _expense.item,
+                    value: _selectedExpenseDetail.item,
                     onChanged: _selectItem,
                     isExpanded: true,
                     decoration: InputDecoration(labelText: 'Item'),
@@ -92,8 +168,8 @@ class _ExpensesState extends State<Expenses> {
                     controller: _ctrlQuantity,
                     onChanged: (value) {
                       setState(() {
-                        _expense.quantity = int.parse(value);
-                        _ctrlTotal.text = _expense.totalPrice.toString();
+                        _selectedExpenseDetail.quantity = int.parse(value);
+                        _ctrlTotal.text = _selectedExpenseDetail.totalPrice.toString();
                       });
                     },
                   ),
@@ -102,8 +178,8 @@ class _ExpensesState extends State<Expenses> {
                     controller: _ctrlPrice,
                     onChanged: (value) {
                       setState(() {
-                        _expense.price = num.parse(value);
-                        _ctrlTotal.text = _expense.totalPrice.toString();
+                        _selectedExpenseDetail.price = num.parse(value);
+                        _ctrlTotal.text = _selectedExpenseDetail.totalPrice.toString();
                       });
                     },
                   ),
@@ -113,9 +189,9 @@ class _ExpensesState extends State<Expenses> {
                     readOnly: true,
                   ),
                   RaisedButton(
-                      child: Text(_expense.id == null ? 'Insert' : 'Update'),
+                      child: Text(_selectedExpenseDetail.id == null ? 'Insert' : 'Update'),
                       onPressed: () {
-                        _saveExpenses();
+                        _saveExpenseDetails();
                       })
                 ],
               ),
@@ -128,8 +204,8 @@ class _ExpensesState extends State<Expenses> {
 
   _selectItem(Item item) {
     setState(() {
-      _expense.item = item;
-      _expense.itemId = item.id;
+      _selectedExpenseDetail.item = item;
+      _selectedExpenseDetail.itemId = item.id;
     });
   }
 
@@ -161,27 +237,45 @@ class _ExpensesState extends State<Expenses> {
   }
 
   _saveExpenses() async {
-    print(_expense.date);
-    var id = await db.insertExpense(_expense);
+    var id = await db.insertExpense(_selectedExpense);
     var expense = await db.getExpense(id);
     setState(() {
       _expenses.add(expense);
-      _expense = Expense();
+      _selectedExpense = Expense();
     });
     _ctrlPage.jumpToPage(0);
   }
 
   _getDate() async {
-    var date = await showDatePicker(context: context, initialDate: _expense.date, firstDate: _firstDate, lastDate: _lastDate);
+    var date = await showDatePicker(context: context, initialDate: _selectedExpenseDetail.date, firstDate: _firstDate, lastDate: _lastDate);
     if (date != null) {
-      var time = await showTimePicker(context: context, initialTime: TimeOfDay(hour: _expense.date.hour, minute: _expense.date.minute));
+      var time = await showTimePicker(context: context, initialTime: TimeOfDay(hour: _selectedExpenseDetail.date.hour, minute: _selectedExpenseDetail.date.minute));
 
       if (time != null) {
         setState(() {
-          _expense.date = DateTime(date.year, date.month, date.day, time.hour, time.minute);
-          _ctrlDate.text = _expense.formatedDate;
+          _selectedExpenseDetail.date = DateTime(date.year, date.month, date.day, time.hour, time.minute);
+          _ctrlDate.text = _selectedExpenseDetail.formatedDate;
         });
       }
     }
   }
+
+  _addExpenseDetails() {
+    setState(() {
+      _selectedExpenseDetail = ExpenseDetails();
+      _selectedExpenseDetail.expenseId = _selectedExpense.id;
+    });
+    _ctrlPage.jumpToPage(3);
+  }
+
+  _saveExpenseDetails() async {
+    var id = await db.insertExpenseDetails(_selectedExpenseDetail);
+    var expenseDetail = await db.getExpenseDetail(id);
+    setState(() {
+      _expenseDetails.add(expenseDetail);
+      _selectedExpenseDetail = ExpenseDetails();
+    });
+    _ctrlPage.jumpToPage(2);
+  }
+
 }
