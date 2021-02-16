@@ -13,7 +13,7 @@ class _HomePageState extends State<HomePage> {
   String _title = '';
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   List<Menu> _menuItems = [
-    Menu(location: 'Items', view: Items()),
+    Menu(location: 'Items 1', view: Items()),
     Menu(location: 'Expenses', view: Expenses()),
   ];
 
@@ -35,27 +35,33 @@ class _HomePageState extends State<HomePage> {
       body: Scaffold(
           key: _scaffoldKey,
           drawer: Drawer(
-            child: Column(mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Expanded(
-                  child: ListView.builder(
-                itemCount: _menuItems.length,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    title: Text(_menuItems[index].location),
-                    leading: _menuItems[index].isSelected ? Icon(Icons.star_outline) : null,
-                    onTap: () {
-                      if (!_menuItems[index].isSelected) Navigator.of(context).pop();
-                      _setAllFalse();
-                      setState(() {
-                        _selectedWidget = _menuItems[index].view;
-                        _menuItems[index].isSelected = true;
-                        _title = _menuItems[index].location;
-                      });
+            child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                      child: ListView.builder(
+                    itemCount: _menuItems.length,
+                    itemBuilder: (context, index) {
+                      return ListTile(
+                        title: Text(_menuItems[index].location),
+                        leading: _menuItems[index].isSelected
+                            ? Icon(Icons.star_outline)
+                            : null,
+                        onTap: () {
+                          if (!_menuItems[index].isSelected)
+                            Navigator.of(context).pop();
+                          _setAllFalse();
+                          setState(() {
+                            _selectedWidget = _menuItems[index].view;
+                            _menuItems[index].isSelected = true;
+                            _title = _menuItems[index].location;
+                          });
+                        },
+                      );
                     },
-                  );
-                },
-              ))
-            ]),
+                  ))
+                ]),
           ),
           body: _selectedWidget),
     );
