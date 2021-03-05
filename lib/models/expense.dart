@@ -12,14 +12,17 @@ class Expense {
   num totalPrice;
 
   String get formatedDateFrom {
-    return DateFormat.yMMMMd('en_US').format(dateFrom);
+    if (dateFrom == null) return '---';
+    return DateFormat("yyyy-MM-dd HH:mm").format(dateFrom);
   }
 
   String get formatedDateTo {
-    return DateFormat.yMMMMd('en_US').format(dateTo);
+    if (dateTo == null) return '---';
+    return DateFormat("yyyy-MM-dd HH:mm").format(dateTo);
   }
 
   String get formatedTotalPrice {
+    if (totalPrice == null) return '0.00';
     return NumberFormat('#,###,##0.00').format(totalPrice);
   }
 

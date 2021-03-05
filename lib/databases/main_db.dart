@@ -29,9 +29,7 @@ class MainDB {
     return await openDatabase(dbPath, version: _version, onCreate: _onCreate, onUpgrade: _onUpgrade);
   }
 
-  _onUpgrade(db, int oldVersion, int newVersion) async {
-
-  }
+  _onUpgrade(db, int oldVersion, int newVersion) async {}
 
   _onCreate(Database db, int version) async {
     await db.execute('''
@@ -84,12 +82,15 @@ class MainDB {
     List<Map> res = await d.query(ItemType.tblName, where: '${ItemType.colId} = ?', whereArgs: [
       id
     ]);
-    return res.length == 0 ? [] : res.map((e) => ItemType.fromMap(e)).first;
+    return res.length == 0 ? null : res.map((e) => ItemType.fromMap(e)).first;
   }
 
   Future<int> insertItemType(ItemType itemType) async {
     Database d = await db;
-    return await d.insert(ItemType.tblName, itemType.toMap());
+    return await d.insert(
+      ItemType.tblName,
+      itemType.toMap(),
+    );
   }
 
   Future<int> updateItemType(ItemType itemType) async {
@@ -164,9 +165,17 @@ class MainDB {
     Database d = await db;
     List<Map> res = await d.query(Expense.tblName);
     List<Expense> exps = [];
+
     if (res.length > 0)
       for (var r in res) {
         var ex = Expense.fromMap(r);
+        var exd = await getExpenseDetails(ex.id);
+        if (exd.length > 0) {
+          exd.sort((a, b) => a.date.compareTo(b.date));
+          ex.dateFrom = exd.first.date;
+          ex.dateTo = exd.last.date;
+          ex.totalPrice = exd.fold(0, (previous, current) => previous + current.totalPrice);
+        }
         exps.add(ex);
       }
     return res.length == 0 ? [] : exps;
@@ -188,6 +197,20 @@ class MainDB {
   Future<int> insertExpense(Expense expense) async {
     Database d = await db;
     return await d.insert(Expense.tblName, expense.toMap());
+  }
+
+  Future<int> updateExpense(Expense expense) async {
+    Database d = await db;
+    return await d.update(Expense.tblName, expense.toMap(), where: '${Expense.colId} = ?', whereArgs: [
+      expense.id
+    ]);
+  }
+
+  Future<int> deleteExpense(int id) async {
+    Database d = await db;
+    return await d.delete(Expense.tblName, where: '${Expense.colId} = ?', whereArgs: [
+      id
+    ]);
   }
   //END EXPENSES MANAGEMENT
 
@@ -221,9 +244,23 @@ class MainDB {
     return null;
   }
 
-  Future<int> insertExpenseDetails(ExpenseDetails expense) async {
+  Future<int> insertExpenseDetails(ExpenseDetails expenseDetail) async {
     Database d = await db;
-    return await d.insert(ExpenseDetails.tblName, expense.toMap());
+    return await d.insert(ExpenseDetails.tblName, expenseDetail.toMap());
+  }
+
+  Future<int> updateExpenseDetails(ExpenseDetails expenseDetail) async {
+    Database d = await db;
+    return await d.update(ExpenseDetails.tblName, expenseDetail.toMap(), where: '${ExpenseDetails.colId} = ?', whereArgs: [
+      expenseDetail.id
+    ]);
+  }
+
+  Future<int> deleteExpenseDetails(int id) async {
+    Database d = await db;
+    return await d.delete(ExpenseDetails.tblName, where: '${ExpenseDetails.colId} = ?', whereArgs: [
+      id
+    ]);
   }
   //END EXPENSE DETAILS MANAGEMENT
 }

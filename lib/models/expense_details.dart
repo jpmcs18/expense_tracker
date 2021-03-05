@@ -20,22 +20,23 @@ class ExpenseDetails {
   String get formatedDate {
     return DateFormat("yyyy-MM-dd HH:mm").format(date);
   }
-
-  String get formatedTotalPrice {
-    return NumberFormat.currency().format(totalPrice);
+  
+  String get formatedPrice {
+    return NumberFormat('#,###,##0.00').format(price);
   }
-
+  String get formatedTotalPrice {
+    return NumberFormat('#,###,##0.00').format(totalPrice);
+  }
   num get totalPrice {
     return price * quantity;
   }
 
-  ExpenseDetails() {
+  ExpenseDetails(this.expenseId) {
     id = null;
     date = DateTime.now();
     quantity = 0;
     price = 0;
     itemId = null;
-    expenseId = null;
     item = null;
   }
 
