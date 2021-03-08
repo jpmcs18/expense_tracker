@@ -30,6 +30,7 @@ class _ExpenseManagementState extends State<ExpenseManagement> {
           children: [
             Expanded(child: Text('Expenses')),
             IconButton(icon: Icon(Icons.add), onPressed: _manageExpenses),
+            IconButton(icon: Icon(Icons.more_vert_rounded), onPressed: () {}),
           ],
         ),
       ),
@@ -58,7 +59,7 @@ class _ExpenseManagementState extends State<ExpenseManagement> {
                         //DateFormatter(AppLocalizations.of(context))
                         //    .getVerboseDateTimeRepresentation(
                         //        _expenses[index].dateFrom)),
-                        '${DateFormatter(AppLocalizations.of(context)).getVerboseDateTimeRepresentation(_expenses[index].dateFrom)}${(_expenses[index].dateTo != _expenses[index].dateFrom ? ' - ' + DateFormatter(AppLocalizations.of(context)).getVerboseDateTimeRepresentation(_expenses[index].dateTo) : '')}'),
+                        '${DateFormatter(AppLocalizations.of(context)).getVerboseDateTimeRepresentation(_expenses[index].dateFrom)}${(_expenses[index].dateTo != _expenses[index].dateFrom && _expenses[index].dateFrom != null ? ' - ' + DateFormatter(AppLocalizations.of(context)).getVerboseDateTimeRepresentation(_expenses[index].dateTo) : '')}'),
                     onTap: () {
                       _selectExpenses(_expenses[index]);
                     },
