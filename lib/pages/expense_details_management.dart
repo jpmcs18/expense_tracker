@@ -1,4 +1,6 @@
 import 'package:expense_tracker/databases/main_db.dart';
+import 'package:expense_tracker/models/app_localizations.dart';
+import 'package:expense_tracker/models/date_formatter.dart';
 import 'package:expense_tracker/models/expense.dart';
 import 'package:expense_tracker/models/expense_details.dart';
 import 'package:expense_tracker/models/item.dart';
@@ -8,7 +10,8 @@ class ExpenseDetailsManagement extends StatefulWidget {
   final Expense expense;
   const ExpenseDetailsManagement(this.expense);
   @override
-  _ExpenseDetailsManagementState createState() => _ExpenseDetailsManagementState();
+  _ExpenseDetailsManagementState createState() =>
+      _ExpenseDetailsManagementState();
 }
 
 class _ExpenseDetailsManagementState extends State<ExpenseDetailsManagement> {
@@ -42,7 +45,7 @@ class _ExpenseDetailsManagementState extends State<ExpenseDetailsManagement> {
       appBar: AppBar(
         title: Row(
           children: [
-            Expanded(child: Text('Expense Details')),
+            Expanded(child: Text(_expense.title)),
             IconButton(icon: Icon(Icons.add), onPressed: _manageExpenseDetail),
           ],
         ),
@@ -63,18 +66,28 @@ class _ExpenseDetailsManagementState extends State<ExpenseDetailsManagement> {
                         children: [
                           Text(
                             _expensesDetails[index].item.description.toString(),
-                            style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
-                          ),
-                          Text('Quantity : ${_expensesDetails[index].quantity.toString()}'),
-                          Text('Price : ${_expensesDetails[index].formatedPrice}')
+                            style: TextStyle(
+                                fontSize: 25, fontWeight: FontWeight.bold),
+                          )
                         ],
                       ),
                     ),
-                    subtitle: Text(_expensesDetails[index].formatedDate),
-                    trailing: Text(
-                      _expensesDetails[index].formatedTotalPrice,
-                      style: TextStyle(fontSize: 20),
-                    ),
+                    subtitle: Text(
+                        //_expensesDetails[index].formatedDate
+                        DateFormatter(AppLocalizations.of(context))
+                            .getVerboseDateTimeRepresentation(
+                                _expensesDetails[index].date)),
+                    trailing: Container(
+                        child: Column(
+                      //mainAxisAlignment: MainAxisAlignment.end,
+                      //crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Text('₱${_expensesDetails[index].formatedPrice}'),
+                        Text('x${_expensesDetails[index].quantity.toString()}'),
+                        Text('₱${_expensesDetails[index].formatedTotalPrice}',
+                            style: TextStyle(fontSize: 20))
+                      ],
+                    )),
                     onTap: null,
                   ),
                   background: Card(
@@ -99,14 +112,18 @@ class _ExpenseDetailsManagementState extends State<ExpenseDetailsManagement> {
                       )),
                   confirmDismiss: (direction) async {
                     if (direction == DismissDirection.endToStart) {
-                      return await _deleteExpenseDetail(_expensesDetails[index].id);
+                      return await _deleteExpenseDetail(
+                          _expensesDetails[index].id);
                     } else {
                       setState(() {
                         _selectedExpenseDetail = _expensesDetails[index];
                         _ctrlDate.text = _selectedExpenseDetail.formatedDate;
-                        _ctrlQuantity.text = _selectedExpenseDetail.quantity.toString();
-                        _ctrlPrice.text = _selectedExpenseDetail.price.toString();
-                        _ctrlTotal.text = _selectedExpenseDetail.totalPrice.toString();
+                        _ctrlQuantity.text =
+                            _selectedExpenseDetail.quantity.toString();
+                        _ctrlPrice.text =
+                            _selectedExpenseDetail.price.toString();
+                        _ctrlTotal.text =
+                            _selectedExpenseDetail.totalPrice.toString();
                       });
                       _manageExpenseDetail();
                       return false;
@@ -161,7 +178,7 @@ class _ExpenseDetailsManagementState extends State<ExpenseDetailsManagement> {
     });
   }
 
-Future<bool> _deleteExpenseDetail(id) async {
+  Future<bool> _deleteExpenseDetail(id) async {
     return showDialog<bool>(
       context: context,
       barrierDismissible: false,
@@ -189,13 +206,14 @@ Future<bool> _deleteExpenseDetail(id) async {
       },
     );
   }
+
   _manageExpenseDetail() {
     print(_selectedExpenseDetail.item);
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('Manage Expense Detail'),
+          title: Text('Add Item'),
           content: Form(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -221,7 +239,8 @@ Future<bool> _deleteExpenseDetail(id) async {
                   onChanged: (value) {
                     setState(() {
                       _selectedExpenseDetail.quantity = int.parse(value);
-                      _ctrlTotal.text = _selectedExpenseDetail.totalPrice.toString();
+                      _ctrlTotal.text =
+                          _selectedExpenseDetail.totalPrice.toString();
                     });
                   },
                 ),
@@ -231,7 +250,8 @@ Future<bool> _deleteExpenseDetail(id) async {
                   onChanged: (value) {
                     setState(() {
                       _selectedExpenseDetail.price = num.parse(value);
-                      _ctrlTotal.text = _selectedExpenseDetail.totalPrice.toString();
+                      _ctrlTotal.text =
+                          _selectedExpenseDetail.totalPrice.toString();
                     });
                   },
                 ),
@@ -244,7 +264,10 @@ Future<bool> _deleteExpenseDetail(id) async {
             ),
           ),
           actions: [
-            TextButton(onPressed: _saveExpenseDetail, child: Text(_selectedExpenseDetail.id == null ? 'Insert' : 'Update'))
+            TextButton(
+                onPressed: _saveExpenseDetail,
+                child: Text(
+                    _selectedExpenseDetail.id == null ? 'Insert' : 'Update'))
           ],
         );
       },
@@ -252,13 +275,22 @@ Future<bool> _deleteExpenseDetail(id) async {
   }
 
   _getDate() async {
-    var date = await showDatePicker(context: context, initialDate: _selectedExpenseDetail.date, firstDate: _firstDate, lastDate: _lastDate);
+    var date = await showDatePicker(
+        context: context,
+        initialDate: _selectedExpenseDetail.date,
+        firstDate: _firstDate,
+        lastDate: _lastDate);
     if (date != null) {
-      var time = await showTimePicker(context: context, initialTime: TimeOfDay(hour: _selectedExpenseDetail.date.hour, minute: _selectedExpenseDetail.date.minute));
+      var time = await showTimePicker(
+          context: context,
+          initialTime: TimeOfDay(
+              hour: _selectedExpenseDetail.date.hour,
+              minute: _selectedExpenseDetail.date.minute));
 
       if (time != null) {
         setState(() {
-          _selectedExpenseDetail.date = DateTime(date.year, date.month, date.day, time.hour, time.minute);
+          _selectedExpenseDetail.date =
+              DateTime(date.year, date.month, date.day, time.hour, time.minute);
           _ctrlDate.text = _selectedExpenseDetail.formatedDate;
         });
       }
@@ -268,7 +300,8 @@ Future<bool> _deleteExpenseDetail(id) async {
   _selectItem(int itemId) {
     setState(() {
       _selectedExpenseDetail.itemId = itemId;
-      _selectedExpenseDetail.item = _items.where((element) => element.id == itemId).first;
+      _selectedExpenseDetail.item =
+          _items.where((element) => element.id == itemId).first;
     });
   }
 

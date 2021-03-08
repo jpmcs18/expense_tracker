@@ -26,7 +26,8 @@ class MainDB {
   _initDatabase() async {
     Directory appDirectory = await getApplicationDocumentsDirectory();
     String dbPath = join(appDirectory.path, _dbName);
-    return await openDatabase(dbPath, version: _version, onCreate: _onCreate, onUpgrade: _onUpgrade);
+    return await openDatabase(dbPath,
+        version: _version, onCreate: _onCreate, onUpgrade: _onUpgrade);
   }
 
   _onUpgrade(db, int oldVersion, int newVersion) async {}
@@ -43,7 +44,8 @@ class MainDB {
       CREATE TABLE ${Item.tblName} (
         ${Item.colId} INTEGER PRIMARY KEY AUTOINCREMENT,
         ${Item.colItemTypeId} INTEGER NOT NULL,
-        ${Item.colDescription} TEXT NOT NULL
+        ${Item.colDescription} TEXT NOT NULL,
+        ${Item.colItemAmount} REAL NOT NULL
       )
     ''');
 
@@ -79,9 +81,8 @@ class MainDB {
   }
 
   Future<ItemType> _getItemType(Database d, int id) async {
-    List<Map> res = await d.query(ItemType.tblName, where: '${ItemType.colId} = ?', whereArgs: [
-      id
-    ]);
+    List<Map> res = await d.query(ItemType.tblName,
+        where: '${ItemType.colId} = ?', whereArgs: [id]);
     return res.length == 0 ? null : res.map((e) => ItemType.fromMap(e)).first;
   }
 
@@ -95,16 +96,14 @@ class MainDB {
 
   Future<int> updateItemType(ItemType itemType) async {
     Database d = await db;
-    return await d.update(ItemType.tblName, itemType.toMap(), where: '${ItemType.colId} = ?', whereArgs: [
-      itemType.id
-    ]);
+    return await d.update(ItemType.tblName, itemType.toMap(),
+        where: '${ItemType.colId} = ?', whereArgs: [itemType.id]);
   }
 
   Future<int> deleteItemType(int id) async {
     Database d = await db;
-    return await d.delete(ItemType.tblName, where: '${ItemType.colId} = ?', whereArgs: [
-      id
-    ]);
+    return await d.delete(ItemType.tblName,
+        where: '${ItemType.colId} = ?', whereArgs: [id]);
   }
   //END ITEM TYPES MANAGEMENT
 
@@ -128,9 +127,8 @@ class MainDB {
   }
 
   Future<Item> _getItem(Database d, int id) async {
-    List<Map> res = await d.query(Item.tblName, where: '${Item.colId} = ?', whereArgs: [
-      id
-    ]);
+    List<Map> res = await d
+        .query(Item.tblName, where: '${Item.colId} = ?', whereArgs: [id]);
     if (res.length > 0)
       for (var r in res) {
         var i = Item.fromMap(r);
@@ -147,16 +145,14 @@ class MainDB {
 
   Future<int> updateItem(Item item) async {
     Database d = await db;
-    return await d.update(Item.tblName, item.toMap(), where: '${Item.colId} = ?', whereArgs: [
-      item.id
-    ]);
+    return await d.update(Item.tblName, item.toMap(),
+        where: '${Item.colId} = ?', whereArgs: [item.id]);
   }
 
   Future<int> deleteItem(int id) async {
     Database d = await db;
-    return await d.delete(Item.tblName, where: '${Item.colId} = ?', whereArgs: [
-      id
-    ]);
+    return await d
+        .delete(Item.tblName, where: '${Item.colId} = ?', whereArgs: [id]);
   }
   //END ITEM MANAGEMENT
 
@@ -174,7 +170,8 @@ class MainDB {
           exd.sort((a, b) => a.date.compareTo(b.date));
           ex.dateFrom = exd.first.date;
           ex.dateTo = exd.last.date;
-          ex.totalPrice = exd.fold(0, (previous, current) => previous + current.totalPrice);
+          ex.totalPrice =
+              exd.fold(0, (previous, current) => previous + current.totalPrice);
         }
         exps.add(ex);
       }
@@ -183,9 +180,8 @@ class MainDB {
 
   Future<Expense> getExpense(int id) async {
     Database d = await db;
-    List<Map> res = await d.query(Expense.tblName, where: '${Expense.colId} = ?', whereArgs: [
-      id
-    ]);
+    List<Map> res = await d
+        .query(Expense.tblName, where: '${Expense.colId} = ?', whereArgs: [id]);
     if (res.length > 0)
       for (var r in res) {
         var ex = Expense.fromMap(r);
@@ -201,25 +197,22 @@ class MainDB {
 
   Future<int> updateExpense(Expense expense) async {
     Database d = await db;
-    return await d.update(Expense.tblName, expense.toMap(), where: '${Expense.colId} = ?', whereArgs: [
-      expense.id
-    ]);
+    return await d.update(Expense.tblName, expense.toMap(),
+        where: '${Expense.colId} = ?', whereArgs: [expense.id]);
   }
 
   Future<int> deleteExpense(int id) async {
     Database d = await db;
-    return await d.delete(Expense.tblName, where: '${Expense.colId} = ?', whereArgs: [
-      id
-    ]);
+    return await d.delete(Expense.tblName,
+        where: '${Expense.colId} = ?', whereArgs: [id]);
   }
   //END EXPENSES MANAGEMENT
 
   //EXPENSE DETAILS MANAGEMENT
   Future<List<ExpenseDetails>> getExpenseDetails(int expenseId) async {
     Database d = await db;
-    List<Map> res = await d.query(ExpenseDetails.tblName, where: '${ExpenseDetails.colExpenseId} = ?', whereArgs: [
-      expenseId
-    ]);
+    List<Map> res = await d.query(ExpenseDetails.tblName,
+        where: '${ExpenseDetails.colExpenseId} = ?', whereArgs: [expenseId]);
     List<ExpenseDetails> exps = [];
     if (res.length > 0)
       for (var r in res) {
@@ -232,9 +225,8 @@ class MainDB {
 
   Future<ExpenseDetails> getExpenseDetail(int id) async {
     Database d = await db;
-    List<Map> res = await d.query(ExpenseDetails.tblName, where: '${ExpenseDetails.colId} = ?', whereArgs: [
-      id
-    ]);
+    List<Map> res = await d.query(ExpenseDetails.tblName,
+        where: '${ExpenseDetails.colId} = ?', whereArgs: [id]);
     if (res.length > 0)
       for (var r in res) {
         var ex = ExpenseDetails.fromMap(r);
@@ -251,16 +243,14 @@ class MainDB {
 
   Future<int> updateExpenseDetails(ExpenseDetails expenseDetail) async {
     Database d = await db;
-    return await d.update(ExpenseDetails.tblName, expenseDetail.toMap(), where: '${ExpenseDetails.colId} = ?', whereArgs: [
-      expenseDetail.id
-    ]);
+    return await d.update(ExpenseDetails.tblName, expenseDetail.toMap(),
+        where: '${ExpenseDetails.colId} = ?', whereArgs: [expenseDetail.id]);
   }
 
   Future<int> deleteExpenseDetails(int id) async {
     Database d = await db;
-    return await d.delete(ExpenseDetails.tblName, where: '${ExpenseDetails.colId} = ?', whereArgs: [
-      id
-    ]);
+    return await d.delete(ExpenseDetails.tblName,
+        where: '${ExpenseDetails.colId} = ?', whereArgs: [id]);
   }
   //END EXPENSE DETAILS MANAGEMENT
 }

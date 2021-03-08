@@ -1,3 +1,5 @@
+import 'package:expense_tracker/models/item.dart';
+
 class ItemType {
   static const tblName = 'item_type';
   static const colId = 'id';
@@ -5,10 +7,14 @@ class ItemType {
 
   int id;
   String description;
+  // int itemCount;
+
+  Item items;
 
   ItemType() {
     id = null;
     description = '';
+    items = null;
   }
 
   ItemType.fromMap(Map<String, dynamic> map) {
@@ -17,9 +23,7 @@ class ItemType {
   }
 
   Map<String, dynamic> toMap() {
-    var map = <String, dynamic>{
-      colDescription: description
-    };
+    var map = <String, dynamic>{colDescription: description};
     if (id != null) map[colId] = id;
     return map;
   }

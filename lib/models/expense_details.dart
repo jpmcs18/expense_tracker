@@ -20,13 +20,15 @@ class ExpenseDetails {
   String get formatedDate {
     return DateFormat("yyyy-MM-dd HH:mm").format(date);
   }
-  
+
   String get formatedPrice {
     return NumberFormat('#,###,##0.00').format(price);
   }
+
   String get formatedTotalPrice {
     return NumberFormat('#,###,##0.00').format(totalPrice);
   }
+
   num get totalPrice {
     return price * quantity;
   }

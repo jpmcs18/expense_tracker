@@ -44,6 +44,8 @@ class _ItemMangementState extends State<ItemMangement> {
                   child: ListTile(
                     title: Text(_items[index].description),
                     subtitle: Text(_items[index].itemType.description),
+                    trailing:
+                        Text('₱${_items[index].formatedAmount.toString()}'),
                   ),
                   background: Card(
                       color: Colors.green,
@@ -67,11 +69,13 @@ class _ItemMangementState extends State<ItemMangement> {
                       )),
                   confirmDismiss: (direction) async {
                     if (direction == DismissDirection.endToStart) {
-                      return await _deleteItems(_items[index].id);
+                      return await _deleteItems(
+                          _items[index].id, _items[index].description);
                     } else {
                       setState(() {
                         _selectedItem = _items[index];
                         _ctrlItemDesc.text = _selectedItem.description;
+                        _selectedItem.amount = _selectedItem.amount ?? 0;
                       });
                       _manageItems();
                       return false;
@@ -143,11 +147,21 @@ class _ItemMangementState extends State<ItemMangement> {
                   isExpanded: true,
                   decoration: InputDecoration(labelText: 'Item Type'),
                 ),
+                TextFormField(
+                  decoration: InputDecoration(labelText: 'Amount'),
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedItem.amount = value as num;
+                    });
+                  },
+                ),
               ],
             ),
           ),
           actions: [
-            TextButton(onPressed: _saveItem, child: Text(_selectedItem.id == null ? 'Insert' : 'Update'))
+            TextButton(
+                onPressed: _saveItem,
+                child: Text(_selectedItem.id == null ? 'Insert' : 'Update'))
           ],
         );
       },
@@ -170,7 +184,8 @@ class _ItemMangementState extends State<ItemMangement> {
   _selectItemType(int itemTypeId) {
     setState(() {
       _selectedItem.itemTypeId = itemTypeId;
-      _selectedItem.itemType = _itemTypes.where((element) => element.id == itemTypeId).first;
+      _selectedItem.itemType =
+          _itemTypes.where((element) => element.id == itemTypeId).first;
     });
   }
 
@@ -184,17 +199,17 @@ class _ItemMangementState extends State<ItemMangement> {
     }
   }
 
-  Future<bool> _deleteItems(id) async {
+  Future<bool> _deleteItems(id, desc) async {
     return showDialog<bool>(
       context: context,
       barrierDismissible: false,
       builder: (context) {
         return AlertDialog(
             title: Text(
-              "Deleting",
+              "Delete",
             ),
             content: Text(
-              "Do you want to delete this item?",
+              "Continue deleting Item '$desc'?",
             ),
             actions: [
               TextButton(

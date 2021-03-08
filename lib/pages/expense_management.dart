@@ -1,4 +1,6 @@
 import 'package:expense_tracker/databases/main_db.dart';
+import 'package:expense_tracker/models/app_localizations.dart';
+import 'package:expense_tracker/models/date_formatter.dart';
 import 'package:expense_tracker/models/expense.dart';
 import 'package:expense_tracker/pages/expense_details_management.dart';
 import 'package:flutter/material.dart';
@@ -48,10 +50,15 @@ class _ExpenseManagementState extends State<ExpenseManagement> {
                       ),
                     ),
                     trailing: Text(
-                      _expenses[index].formatedTotalPrice,
+                      '₱${_expenses[index].formatedTotalPrice}',
                       style: TextStyle(fontSize: 20),
                     ),
-                    subtitle: Text('${_expenses[index].formatedDateFrom} - ${_expenses[index].formatedDateTo}'),
+                    subtitle: Text(
+                        //'${_expenses[index].formatedDateFrom} - ${_expenses[index].formatedDateTo}'),
+                        //DateFormatter(AppLocalizations.of(context))
+                        //    .getVerboseDateTimeRepresentation(
+                        //        _expenses[index].dateFrom)),
+                        '${DateFormatter(AppLocalizations.of(context)).getVerboseDateTimeRepresentation(_expenses[index].dateFrom)}${(_expenses[index].dateTo != _expenses[index].dateFrom ? ' - ' + DateFormatter(AppLocalizations.of(context)).getVerboseDateTimeRepresentation(_expenses[index].dateTo) : '')}'),
                     onTap: () {
                       _selectExpenses(_expenses[index]);
                     },
@@ -78,7 +85,8 @@ class _ExpenseManagementState extends State<ExpenseManagement> {
                       )),
                   confirmDismiss: (direction) async {
                     if (direction == DismissDirection.endToStart) {
-                      return await _deleteExpenses(_expenses[index].id);
+                      return await _deleteExpenses(
+                          _expenses[index].id, _expenses[index].title);
                     } else {
                       setState(() {
                         _selectedExpense = _expenses[index];
@@ -97,17 +105,17 @@ class _ExpenseManagementState extends State<ExpenseManagement> {
     );
   }
 
-  Future<bool> _deleteExpenses(id) async {
+  Future<bool> _deleteExpenses(id, title) async {
     return showDialog<bool>(
       context: context,
       barrierDismissible: false,
       builder: (context) {
         return AlertDialog(
             title: Text(
-              "Deleting",
+              "Delete",
             ),
             content: Text(
-              "Do you want to delete this expense?",
+              "Continue deleting Expense '$title'?\n\n(This action is irreversible.)",
             ),
             actions: [
               TextButton(
@@ -157,7 +165,9 @@ class _ExpenseManagementState extends State<ExpenseManagement> {
             },
           ),
           actions: [
-            TextButton(onPressed: _saveExpense, child: Text(_selectedExpense.id == null ? 'Insert' : 'Update'))
+            TextButton(
+                onPressed: _saveExpense,
+                child: Text(_selectedExpense.id == null ? 'Insert' : 'Update'))
           ],
         );
       },
