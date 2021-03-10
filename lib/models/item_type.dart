@@ -1,26 +1,16 @@
+import 'package:json_annotation/json_annotation.dart';
+
+part 'item_type.g.dart';
+
+@JsonSerializable()
 class ItemType {
-  static const tblName = 'item_type';
-  static const colId = 'id';
-  static const colDescription = 'description';
+  @JsonKey(includeIfNull: false)
+  int? id;
+  String? description;
 
-  int id;
-  String description;
+  ItemType({this.id, this.description});
 
-  ItemType() {
-    id = null;
-    description = '';
-  }
+  factory ItemType.fromJson(Map<String, dynamic> json) => _$ItemTypeFromJson(json);
 
-  ItemType.fromMap(Map<String, dynamic> map) {
-    id = map[colId];
-    description = map[colDescription];
-  }
-
-  Map<String, dynamic> toMap() {
-    var map = <String, dynamic>{
-      colDescription: description
-    };
-    if (id != null) map[colId] = id;
-    return map;
-  }
+  Map<String, dynamic> toJson() => _$ItemTypeToJson(this);
 }

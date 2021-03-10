@@ -42,8 +42,8 @@ class _ItemMangementState extends State<ItemMangement> {
                 child: Dismissible(
                   key: Key(_items[index].id.toString()),
                   child: ListTile(
-                    title: Text(_items[index].description),
-                    subtitle: Text(_items[index].itemType.description),
+                    title: Text(_items[index].description ?? ""),
+                    subtitle: Text(_items[index].itemType?.description ?? ""),
                   ),
                   background: Card(
                       color: Colors.green,
@@ -71,7 +71,7 @@ class _ItemMangementState extends State<ItemMangement> {
                     } else {
                       setState(() {
                         _selectedItem = _items[index];
-                        _ctrlItemDesc.text = _selectedItem.description;
+                        _ctrlItemDesc.text = _selectedItem.description ?? "";
                       });
                       _manageItems();
                       return false;
@@ -103,10 +103,10 @@ class _ItemMangementState extends State<ItemMangement> {
 
   _setItemTypeToDropDownItemTypes() async {
     List<DropdownMenuItem<int>> dditemType = [];
-    if (_itemTypes != null) {
+    if (_itemTypes.length > 0) {
       for (var itemType in _itemTypes) {
         dditemType.add(DropdownMenuItem(
-          child: Text(itemType.description),
+          child: Text(itemType.description ?? ""),
           value: itemType.id,
         ));
       }
@@ -167,7 +167,7 @@ class _ItemMangementState extends State<ItemMangement> {
     Navigator.of(context).pop();
   }
 
-  _selectItemType(int itemTypeId) {
+  _selectItemType(int? itemTypeId) {
     setState(() {
       _selectedItem.itemTypeId = itemTypeId;
       _selectedItem.itemType = _itemTypes.where((element) => element.id == itemTypeId).first;
@@ -177,15 +177,15 @@ class _ItemMangementState extends State<ItemMangement> {
   _getItems() async {
     var items = await db.getItems();
     print(items.length);
-    if (items != null) {
+    if (items.length > 0) {
       setState(() {
         _items = items;
       });
     }
   }
 
-  Future<bool> _deleteItems(id) async {
-    return showDialog<bool>(
+  Future<bool?> _deleteItems(id) async {
+    return showDialog<bool?>(
       context: context,
       barrierDismissible: false,
       builder: (context) {

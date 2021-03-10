@@ -2,6 +2,8 @@ import 'package:expense_tracker/databases/main_db.dart';
 import 'package:expense_tracker/models/expense.dart';
 import 'package:expense_tracker/pages/expense_details_management.dart';
 import 'package:flutter/material.dart';
+import 'package:expense_tracker/helpers/extensions/format_extension.dart';
+import 'package:expense_tracker/helpers/constants/format_constant.dart';
 
 class ExpenseManagement extends StatefulWidget {
   @override
@@ -43,15 +45,15 @@ class _ExpenseManagementState extends State<ExpenseManagement> {
                     title: Container(
                       child: Row(
                         children: [
-                          Expanded(child: Text(_expenses[index].title))
+                          Expanded(child: Text(_expenses[index].title ?? ""))
                         ],
                       ),
                     ),
                     trailing: Text(
-                      _expenses[index].formatedTotalPrice,
+                      (_expenses[index].totalPrice ?? 0).format(),
                       style: TextStyle(fontSize: 20),
                     ),
-                    subtitle: Text('${_expenses[index].formatedDateFrom} - ${_expenses[index].formatedDateTo}'),
+                    subtitle: Text('${_expenses[index].dateFrom?.format() ?? FormatConstant.date} - ${_expenses[index].dateTo?.format() ?? FormatConstant.date}'),
                     onTap: () {
                       _selectExpenses(_expenses[index]);
                     },
@@ -82,7 +84,7 @@ class _ExpenseManagementState extends State<ExpenseManagement> {
                     } else {
                       setState(() {
                         _selectedExpense = _expenses[index];
-                        _ctrlTitle.text = _selectedExpense.title;
+                        _ctrlTitle.text = _selectedExpense.title ?? "";
                       });
                       _manageExpenses();
                       return false;
@@ -97,7 +99,7 @@ class _ExpenseManagementState extends State<ExpenseManagement> {
     );
   }
 
-  Future<bool> _deleteExpenses(id) async {
+  Future<bool?> _deleteExpenses(id) async {
     return showDialog<bool>(
       context: context,
       barrierDismissible: false,

@@ -10,7 +10,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  Widget _selectedWidget = Container();
+  Widget? _selectedWidget = Container();
   List<Menu> _menuItems = [
     Menu(location: 'Expenses', view: ExpenseManagement()),
     Menu(location: 'Items', view: ItemMangement()),
@@ -38,7 +38,7 @@ class _HomePageState extends State<HomePage> {
                         _selectedWidget = menu.view;
                         menu.isSelected = true;
                       });
-             }, child: Text(menu.location),));
+             }, child: Text(menu.location ?? ""),));
           }).toList(),
         ),
       ),

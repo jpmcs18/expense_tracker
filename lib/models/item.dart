@@ -1,36 +1,21 @@
 import 'package:expense_tracker/models/item_type.dart';
+import 'package:json_annotation/json_annotation.dart';
 
+part 'item.g.dart';
+
+@JsonSerializable(explicitToJson: true)
 class Item {
-  static const tblName = 'item';
-  static const colId = 'id';
-  static const colDescription = 'description';
-  static const colItemTypeId = 'item_type_id';
+  @JsonKey(includeIfNull: false)
+  int? id;
+  String? description;
+  @JsonKey(name: 'item_type_id')
+  int? itemTypeId;
 
-  int id;
-  String description;
-  int itemTypeId;
+  @JsonKey(ignore: true)
+  ItemType? itemType;
 
-  ItemType itemType;
+  Item({this.id, this.itemTypeId, this.itemType});
 
-  Item() {
-    id = null;
-    description = '';
-    itemTypeId = null;
-    itemType = null;
-  }
-
-  Item.fromMap(Map<String, dynamic> map) {
-    id = map[colId];
-    description = map[colDescription];
-    itemTypeId = map[colItemTypeId];
-  }
-
-  Map<String, dynamic> toMap() {
-    var map = <String, dynamic>{
-      colDescription: description,
-      colItemTypeId: itemTypeId,
-    };
-    if (id != null) map[colId] = id;
-    return map;
-  }
+  factory Item.fromJson(Map<String, dynamic> json) => _$ItemFromJson(json);
+  Map<String, dynamic> toJson() => _$ItemToJson(this);
 }

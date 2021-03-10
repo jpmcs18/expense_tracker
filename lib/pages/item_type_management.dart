@@ -42,7 +42,7 @@ class _ItemTypeMangementState extends State<ItemTypeMangement> {
                     title: Container(
                       child: Row(
                         children: [
-                          Expanded(child: Text(_itemTypes[index].description))
+                          Expanded(child: Text(_itemTypes[index].description ?? ""))
                         ],
                       ),
                     ),
@@ -73,7 +73,7 @@ class _ItemTypeMangementState extends State<ItemTypeMangement> {
                     } else {
                       setState(() {
                         _selectedItemType = _itemTypes[index];
-                        _ctrlItemTypeDesc.text = _selectedItemType.description;
+                        _ctrlItemTypeDesc.text = _selectedItemType.description ?? "";
                       });
                       _manageItemType();
                       return false;
@@ -88,8 +88,8 @@ class _ItemTypeMangementState extends State<ItemTypeMangement> {
     );
   }
 
-  Future<bool> _deleteItemType(id) async {
-    return showDialog<bool>(
+  Future<bool?> _deleteItemType(id) async {
+    return showDialog<bool?>(
       context: context,
       barrierDismissible: false,
       builder: (context) {
