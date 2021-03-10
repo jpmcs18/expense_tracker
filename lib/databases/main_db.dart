@@ -30,7 +30,8 @@ class MainDB {
   _initDatabase() async {
     Directory appDirectory = await getApplicationDocumentsDirectory();
     String dbPath = join(appDirectory.path, _dbName);
-    return await openDatabase(dbPath, version: _version, onCreate: _onCreate, onUpgrade: _onUpgrade);
+    return await openDatabase(dbPath,
+        version: _version, onCreate: _onCreate, onUpgrade: _onUpgrade);
   }
 
   _onUpgrade(db, int oldVersion, int newVersion) async {}
@@ -44,17 +45,10 @@ class MainDB {
     ''');
 
     await db.execute('''
-      CREATE TABLE ${ItemHelper.tblName} (
         ${ItemHelper.colId} INTEGER PRIMARY KEY AUTOINCREMENT,
         ${ItemHelper.colItemTypeId} INTEGER NOT NULL,
-        ${ItemHelper.colDescription} TEXT NOT NULL
-      )
-    ''');
-
-    await db.execute('''
-      CREATE TABLE ${ExpenseHelper.tblName} (
-        ${ExpenseHelper.colId} INTEGER PRIMARY KEY AUTOINCREMENT,
-        ${ExpenseHelper.colTitle} TEXT NOT NULL
+        ${ItemHelper.colDescription} TEXT NOT NULL,
+        ${ItemHelper.colItemAmount} REAL NOT NULL
       )
     ''');
 

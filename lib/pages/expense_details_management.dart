@@ -1,4 +1,6 @@
 import 'package:expense_tracker/databases/main_db.dart';
+import 'package:expense_tracker/models/app_localizations.dart';
+import 'package:expense_tracker/models/date_formatter.dart';
 import 'package:expense_tracker/models/expense.dart';
 import 'package:expense_tracker/models/expense_details.dart';
 import 'package:expense_tracker/models/item.dart';
@@ -11,7 +13,8 @@ class ExpenseDetailsManagement extends StatefulWidget {
   final Expense expense;
   const ExpenseDetailsManagement(this.expense);
   @override
-  _ExpenseDetailsManagementState createState() => _ExpenseDetailsManagementState();
+  _ExpenseDetailsManagementState createState() =>
+      _ExpenseDetailsManagementState();
 }
 
 class _ExpenseDetailsManagementState extends State<ExpenseDetailsManagement> {
@@ -45,7 +48,7 @@ class _ExpenseDetailsManagementState extends State<ExpenseDetailsManagement> {
       appBar: AppBar(
         title: Row(
           children: [
-            Expanded(child: Text('Expense Details')),
+            Expanded(child: Text(_expense.title)),
             IconButton(icon: Icon(Icons.add), onPressed: _manageExpenseDetail),
           ],
         ),
@@ -102,7 +105,8 @@ class _ExpenseDetailsManagementState extends State<ExpenseDetailsManagement> {
                       )),
                   confirmDismiss: (direction) async {
                     if (direction == DismissDirection.endToStart) {
-                      return await _deleteExpenseDetail(_expensesDetails[index].id);
+                      return await _deleteExpenseDetail(
+                          _expensesDetails[index].id);
                     } else {
                       setState(() {
                         _selectedExpenseDetail = _expensesDetails[index];
@@ -194,12 +198,13 @@ Future<bool?> _deleteExpenseDetail(id) async {
       },
     );
   }
+
   _manageExpenseDetail() {
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('Manage Expense Detail'),
+          title: Text('Add Item'),
           content: Form(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -225,7 +230,8 @@ Future<bool?> _deleteExpenseDetail(id) async {
                   onChanged: (value) {
                     setState(() {
                       _selectedExpenseDetail.quantity = int.parse(value);
-                      _ctrlTotal.text = _selectedExpenseDetail.totalPrice.toString();
+                      _ctrlTotal.text =
+                          _selectedExpenseDetail.totalPrice.toString();
                     });
                   },
                 ),
@@ -235,7 +241,8 @@ Future<bool?> _deleteExpenseDetail(id) async {
                   onChanged: (value) {
                     setState(() {
                       _selectedExpenseDetail.price = num.parse(value);
-                      _ctrlTotal.text = _selectedExpenseDetail.totalPrice.toString();
+                      _ctrlTotal.text =
+                          _selectedExpenseDetail.totalPrice.toString();
                     });
                   },
                 ),
@@ -248,7 +255,10 @@ Future<bool?> _deleteExpenseDetail(id) async {
             ),
           ),
           actions: [
-            TextButton(onPressed: _saveExpenseDetail, child: Text(_selectedExpenseDetail.id == null ? 'Insert' : 'Update'))
+            TextButton(
+                onPressed: _saveExpenseDetail,
+                child: Text(
+                    _selectedExpenseDetail.id == null ? 'Insert' : 'Update'))
           ],
         );
       },
@@ -272,7 +282,8 @@ Future<bool?> _deleteExpenseDetail(id) async {
   _selectItem(int? itemId) {
     setState(() {
       _selectedExpenseDetail.itemId = itemId;
-      _selectedExpenseDetail.item = _items.where((element) => element.id == itemId).first;
+      _selectedExpenseDetail.item =
+          _items.where((element) => element.id == itemId).first;
     });
   }
 

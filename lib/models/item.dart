@@ -1,3 +1,4 @@
+import 'package:intl/intl.dart';
 import 'package:expense_tracker/models/item_type.dart';
 import 'package:json_annotation/json_annotation.dart';
 

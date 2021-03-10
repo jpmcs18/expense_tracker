@@ -1,4 +1,5 @@
 import 'package:expense_tracker/databases/main_db.dart';
+import 'package:expense_tracker/models/item.dart';
 import 'package:flutter/material.dart';
 import '../models/item_type.dart';
 
@@ -10,6 +11,7 @@ class ItemTypeMangement extends StatefulWidget {
 class _ItemTypeMangementState extends State<ItemTypeMangement> {
   MainDB db = MainDB.instance;
   List<ItemType> _itemTypes = [];
+  List<Item> _items = [];
   ItemType _selectedItemType = ItemType();
   final _ctrlItemTypeDesc = TextEditingController();
 
@@ -17,6 +19,7 @@ class _ItemTypeMangementState extends State<ItemTypeMangement> {
   void initState() {
     super.initState();
     _getItemTypes();
+    _getItems();
   }
 
   @override
@@ -45,8 +48,9 @@ class _ItemTypeMangementState extends State<ItemTypeMangement> {
                           Expanded(child: Text(_itemTypes[index].description ?? ""))
                         ],
                       ),
-                    ),
-                  ),
+                      trailing: Text(
+                          '${_items.where((e) => e.itemTypeId == _itemTypes[index].id).length ?? 0} item/s')),
+                  //_itemTypes[index].id.toString())),
                   background: Card(
                       color: Colors.green,
                       child: Container(
@@ -69,7 +73,8 @@ class _ItemTypeMangementState extends State<ItemTypeMangement> {
                       )),
                   confirmDismiss: (direction) async {
                     if (direction == DismissDirection.endToStart) {
-                      return await _deleteItemType(_itemTypes[index].id);
+                      return await _deleteItemType(
+                          _itemTypes[index].id, _itemTypes[index].description);
                     } else {
                       setState(() {
                         _selectedItemType = _itemTypes[index];
@@ -102,21 +107,17 @@ class _ItemTypeMangementState extends State<ItemTypeMangement> {
             ),
             actions: [
               TextButton(
-                  onPressed: () async {
-                    var b = (await db.deleteItemType(id)) > 0;
-                    Navigator.of(context).pop(b);
-                  },
-                  child: Text('Yes')),
-              TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop(false);
-                  },
-                  child: Text('No')),
-            ]);
-      },
-    );
+                child: Text('Ok'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
   }
-
 
   _manageItemType() {
     showDialog(
@@ -134,12 +135,15 @@ class _ItemTypeMangementState extends State<ItemTypeMangement> {
             },
           ),
           actions: [
-            TextButton(onPressed: _saveItemType, child: Text(_selectedItemType.id == null ? 'Insert' : 'Update'))
+            TextButton(
+                onPressed: _saveItemType,
+                child: Text(_selectedItemType.id == null ? 'Insert' : 'Update'))
           ],
         );
       },
     );
   }
+
   _saveItemType() async {
     if (_selectedItemType.id == null)
       await db.insertItemType(_selectedItemType);
@@ -158,5 +162,15 @@ class _ItemTypeMangementState extends State<ItemTypeMangement> {
     setState(() {
       _itemTypes = itemTypes;
     });
+  }
+
+  _getItems() async {
+    var items = await db.getItems();
+    print(items.length);
+    if (items != null) {
+      setState(() {
+        _items = items;
+      });
+    }
   }
 }
