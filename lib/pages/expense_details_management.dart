@@ -5,6 +5,9 @@ import 'package:expense_tracker/models/expense.dart';
 import 'package:expense_tracker/models/expense_details.dart';
 import 'package:expense_tracker/models/item.dart';
 import 'package:flutter/material.dart';
+import 'package:expense_tracker/helpers/extensions/format_extension.dart';
+import 'package:expense_tracker/helpers/constants/format_constant.dart';
+
 
 class ExpenseDetailsManagement extends StatefulWidget {
   final Expense expense;
@@ -17,11 +20,11 @@ class ExpenseDetailsManagement extends StatefulWidget {
 class _ExpenseDetailsManagementState extends State<ExpenseDetailsManagement> {
   MainDB db = MainDB.instance;
 
-  Expense _expense;
-  List<DropdownMenuItem<int>> _dropDownItems = [];
-  List<ExpenseDetails> _expensesDetails = [];
+  Expense _expense = Expense();
+  final List<DropdownMenuItem<int>> _dropDownItems = [];
+  final List<ExpenseDetails> _expensesDetails = [];
   List<Item> _items = [];
-  ExpenseDetails _selectedExpenseDetail;
+  ExpenseDetails _selectedExpenseDetail = ExpenseDetails();
   final DateTime _firstDate = DateTime(DateTime.now().year - 1);
   final DateTime _lastDate = DateTime.now();
   final _ctrlDate = TextEditingController();
@@ -65,29 +68,19 @@ class _ExpenseDetailsManagementState extends State<ExpenseDetailsManagement> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            _expensesDetails[index].item.description.toString(),
-                            style: TextStyle(
-                                fontSize: 25, fontWeight: FontWeight.bold),
-                          )
+                            _expensesDetails[index].item!.description.toString(),
+                            style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+                          ),
+                          Text('Quantity : ${_expensesDetails[index].quantity.toString()}'),
+                          Text('Price : ${(_expensesDetails[index].price ?? 0).format()}')
                         ],
                       ),
                     ),
-                    subtitle: Text(
-                        //_expensesDetails[index].formatedDate
-                        DateFormatter(AppLocalizations.of(context))
-                            .getVerboseDateTimeRepresentation(
-                                _expensesDetails[index].date)),
-                    trailing: Container(
-                        child: Column(
-                      //mainAxisAlignment: MainAxisAlignment.end,
-                      //crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Text('₱${_expensesDetails[index].formatedPrice}'),
-                        Text('x${_expensesDetails[index].quantity.toString()}'),
-                        Text('₱${_expensesDetails[index].formatedTotalPrice}',
-                            style: TextStyle(fontSize: 20))
-                      ],
-                    )),
+                    subtitle: Text(_expensesDetails[index].date?.format() ?? FormatConstant.date),
+                    trailing: Text(
+                      _expensesDetails[index].totalPrice.format(),
+                      style: TextStyle(fontSize: 20),
+                    ),
                     onTap: null,
                   ),
                   background: Card(
@@ -117,13 +110,10 @@ class _ExpenseDetailsManagementState extends State<ExpenseDetailsManagement> {
                     } else {
                       setState(() {
                         _selectedExpenseDetail = _expensesDetails[index];
-                        _ctrlDate.text = _selectedExpenseDetail.formatedDate;
-                        _ctrlQuantity.text =
-                            _selectedExpenseDetail.quantity.toString();
-                        _ctrlPrice.text =
-                            _selectedExpenseDetail.price.toString();
-                        _ctrlTotal.text =
-                            _selectedExpenseDetail.totalPrice.toString();
+                        _ctrlDate.text = _selectedExpenseDetail.date?.format() ?? FormatConstant.date;
+                        _ctrlQuantity.text = _selectedExpenseDetail.quantity.toString();
+                        _ctrlPrice.text = _selectedExpenseDetail.price.toString();
+                        _ctrlTotal.text = _selectedExpenseDetail.totalPrice.toString();
                       });
                       _manageExpenseDetail();
                       return false;
@@ -155,31 +145,33 @@ class _ExpenseDetailsManagementState extends State<ExpenseDetailsManagement> {
     List<DropdownMenuItem<int>> dditem = [];
     for (var item in _items) {
       dditem.add(DropdownMenuItem(
-        child: Text(item.description),
+        child: Text(item.description ?? ''),
         value: item.id,
       ));
     }
 
     setState(() {
-      _dropDownItems = dditem;
+      _dropDownItems.clear();
+      _dropDownItems.addAll(dditem);
     });
   }
 
   _getExpenseDetails() async {
-    var ed = await db.getExpenseDetails(_expense.id);
+    var ed = await db.getExpenseDetails(_expense.id ?? 0);
     setState(() {
-      _expensesDetails = ed;
+      _expensesDetails.clear();
+      _expensesDetails.addAll(ed);
     });
   }
 
   _initDetails() {
     setState(() {
-      _selectedExpenseDetail = ExpenseDetails(_expense.id);
+      _selectedExpenseDetail = ExpenseDetails(expenseId: _expense.id);
     });
   }
 
-  Future<bool> _deleteExpenseDetail(id) async {
-    return showDialog<bool>(
+Future<bool?> _deleteExpenseDetail(id) async {
+    return showDialog<bool?>(
       context: context,
       barrierDismissible: false,
       builder: (context) {
@@ -208,7 +200,6 @@ class _ExpenseDetailsManagementState extends State<ExpenseDetailsManagement> {
   }
 
   _manageExpenseDetail() {
-    print(_selectedExpenseDetail.item);
     showDialog(
       context: context,
       builder: (context) {
@@ -275,29 +266,20 @@ class _ExpenseDetailsManagementState extends State<ExpenseDetailsManagement> {
   }
 
   _getDate() async {
-    var date = await showDatePicker(
-        context: context,
-        initialDate: _selectedExpenseDetail.date,
-        firstDate: _firstDate,
-        lastDate: _lastDate);
+    var date = await showDatePicker(context: context, initialDate: _selectedExpenseDetail.date!, firstDate: _firstDate, lastDate: _lastDate);
     if (date != null) {
-      var time = await showTimePicker(
-          context: context,
-          initialTime: TimeOfDay(
-              hour: _selectedExpenseDetail.date.hour,
-              minute: _selectedExpenseDetail.date.minute));
+      var time = await showTimePicker(context: context, initialTime: TimeOfDay(hour: _selectedExpenseDetail.date!.hour, minute: _selectedExpenseDetail.date!.minute));
 
       if (time != null) {
         setState(() {
-          _selectedExpenseDetail.date =
-              DateTime(date.year, date.month, date.day, time.hour, time.minute);
-          _ctrlDate.text = _selectedExpenseDetail.formatedDate;
+          _selectedExpenseDetail.date = DateTime(date.year, date.month, date.day, time.hour, time.minute);
+          _ctrlDate.text = _selectedExpenseDetail.date?.format() ?? FormatConstant.date;
         });
       }
     }
   }
 
-  _selectItem(int itemId) {
+  _selectItem(int? itemId) {
     setState(() {
       _selectedExpenseDetail.itemId = itemId;
       _selectedExpenseDetail.item =

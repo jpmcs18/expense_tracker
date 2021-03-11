@@ -10,7 +10,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  Widget _selectedWidget = Container();
+  Widget? _selectedWidget = Container();
   List<Menu> _menuItems = [
     Menu(location: 'Expenses', view: ExpenseManagement()),
     Menu(location: 'Item Type', view: ItemTypeMangement()),
@@ -32,17 +32,13 @@ class _HomePageState extends State<HomePage> {
       bottomNavigationBar: Card(
         child: Row(
           children: _menuItems.map((menu) {
-            return Expanded(
-                child: TextButton(
-              onPressed: () {
-                _setAllFalse();
-                setState(() {
-                  _selectedWidget = menu.view;
-                  menu.isSelected = true;
-                });
-              },
-              child: Text(menu.location),
-            ));
+            return Expanded(child: TextButton(onPressed: () { 
+              _setAllFalse();
+                      setState(() {
+                        _selectedWidget = menu.view;
+                        menu.isSelected = true;
+                      });
+             }, child: Text(menu.location ?? ""),));
           }).toList(),
         ),
       ),

@@ -42,12 +42,11 @@ class _ItemTypeMangementState extends State<ItemTypeMangement> {
                 child: Dismissible(
                   key: Key(_itemTypes[index].id.toString()),
                   child: ListTile(
-                      title: Container(
-                        child: Row(
-                          children: [
-                            Expanded(child: Text(_itemTypes[index].description))
-                          ],
-                        ),
+                    title: Container(
+                      child: Row(
+                        children: [
+                          Expanded(child: Text(_itemTypes[index].description ?? ""))
+                        ],
                       ),
                       trailing: Text(
                           '${_items.where((e) => e.itemTypeId == _itemTypes[index].id).length ?? 0} item/s')),
@@ -79,7 +78,7 @@ class _ItemTypeMangementState extends State<ItemTypeMangement> {
                     } else {
                       setState(() {
                         _selectedItemType = _itemTypes[index];
-                        _ctrlItemTypeDesc.text = _selectedItemType.description;
+                        _ctrlItemTypeDesc.text = _selectedItemType.description ?? "";
                       });
                       _manageItemType();
                       return false;
@@ -94,43 +93,18 @@ class _ItemTypeMangementState extends State<ItemTypeMangement> {
     );
   }
 
-  Future<bool> _deleteItemType(id, desc) async {
-    int len = (_items.where((e) => e.itemTypeId == id).length ?? 0);
-
-    if (len == 0) {
-      return showDialog<bool>(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) {
-          return AlertDialog(
-              title: Text(
-                "Delete",
-              ),
-              content: Text(
-                "Continue deleting Item Type '$desc'?",
-              ),
-              actions: [
-                TextButton(
-                    onPressed: () async {
-                      var b = (await db.deleteItemType(id)) > 0;
-                      Navigator.of(context).pop(b);
-                    },
-                    child: Text('Yes')),
-                TextButton(
-                    onPressed: () {
-                      Navigator.of(context).pop(false);
-                    },
-                    child: Text('No')),
-              ]);
-        },
-      );
-    } else {
-      return showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text("Can't delete Item Type '$desc'."),
-            content: Text("It already has $len item/s."),
+  Future<bool?> _deleteItemType(id) async {
+    return showDialog<bool?>(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return AlertDialog(
+            title: Text(
+              "Deleting",
+            ),
+            content: Text(
+              "Do you want to delete this item type?",
+            ),
             actions: [
               TextButton(
                 child: Text('Ok'),
