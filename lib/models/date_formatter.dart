@@ -13,8 +13,8 @@ class DateFormatter {
       DateTime localDateTime = dateTime.toLocal();
 
       if (!localDateTime.difference(justNow).isNegative) {
-        return localizations.translate('dateFormatter_just_now');
-        //return 'Just now';
+        //return localizations.translate('dateFormatter_just_now');
+        return 'Just now';
       }
 
       String roughTimeString = DateFormat('jm').format(dateTime);
@@ -30,20 +30,22 @@ class DateFormatter {
       if (localDateTime.day == yesterday.day &&
           localDateTime.month == now.month &&
           localDateTime.year == now.year) {
-        return localizations.translate('dateFormatter_yesterday');
-        //return 'Yesterday, ' + roughTimeString;
+        //return localizations.translate('dateFormatter_yesterday');
+        return 'Yesterday, ' + roughTimeString;
       }
 
       if (now.difference(localDateTime).inDays < 4) {
-        String weekday =
-            DateFormat('EEEE', localizations.locale.toLanguageTag())
-                .format(localDateTime);
+        //String weekday =
+        //    DateFormat('EEEE', localizations.locale.toLanguageTag())
+        //        .format(localDateTime);
+
+        String weekday = DateFormat('EEEE').format(localDateTime);
 
         return '$weekday, $roughTimeString';
       }
 
-      return '${DateFormat('yMd', localizations.locale.toLanguageTag()).format(dateTime)}, $roughTimeString';
-      //return '${DateFormat('yMd').format(dateTime)}, $roughTimeString';
+      //return '${DateFormat('yMd', localizations.locale.toLanguageTag()).format(dateTime)}, $roughTimeString';
+      return '${DateFormat('yMd').format(dateTime)}, $roughTimeString';
     }
 
     return '';
