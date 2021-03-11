@@ -13,8 +13,8 @@ class _HomePageState extends State<HomePage> {
   Widget? _selectedWidget = Container();
   List<Menu> _menuItems = [
     Menu(location: 'Expenses', view: ExpenseManagement()),
-    Menu(location: 'Item Type', view: ItemTypeMangement()),
     Menu(location: 'Items', view: ItemMangement()),
+    Menu(location: 'Item Type', view: ItemTypeMangement()),
   ];
 
   @override

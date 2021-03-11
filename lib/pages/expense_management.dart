@@ -1,6 +1,4 @@
 import 'package:expense_tracker/databases/main_db.dart';
-import 'package:expense_tracker/models/app_localizations.dart';
-import 'package:expense_tracker/models/date_formatter.dart';
 import 'package:expense_tracker/models/expense.dart';
 import 'package:expense_tracker/pages/expense_details_management.dart';
 import 'package:flutter/material.dart';
@@ -53,10 +51,10 @@ class _ExpenseManagementState extends State<ExpenseManagement> {
                       ),
                     ),
                     trailing: Text(
-                      (_expenses[index].totalPrice ?? 0).format(),
+                      _expenses[index].totalPrice.format(),
                       style: TextStyle(fontSize: 20),
                     ),
-                    subtitle: Text('${_expenses[index].dateFrom?.format() ?? FormatConstant.date} - ${_expenses[index].dateTo?.format() ?? FormatConstant.date}'),
+                    subtitle: Text(_expenses[index].dateRange),
                     onTap: () {
                       _selectExpenses(_expenses[index]);
                     },
@@ -83,12 +81,10 @@ class _ExpenseManagementState extends State<ExpenseManagement> {
                       )),
                   confirmDismiss: (direction) async {
                     if (direction == DismissDirection.endToStart) {
-                      return await _deleteExpenses(
-                          _expenses[index].id, _expenses[index].title);
+                      return await _deleteExpenses(_expenses[index].id, _expenses[index].title);
                     } else {
                       setState(() {
                         _selectedExpense = _expenses[index];
-                        _ctrlTitle.text = _selectedExpense.title ?? "";
                       });
                       _manageExpenses();
                       return false;
@@ -103,7 +99,7 @@ class _ExpenseManagementState extends State<ExpenseManagement> {
     );
   }
 
-  Future<bool> _deleteExpenses(id, title) async {
+  Future<bool?> _deleteExpenses(id, title) async {
     return showDialog<bool>(
       context: context,
       barrierDismissible: false,
@@ -148,7 +144,11 @@ class _ExpenseManagementState extends State<ExpenseManagement> {
   }
 
   _manageExpenses() {
+    setState(() {
+      _ctrlTitle.text = _selectedExpense.title ?? "";
+    });
     showDialog(
+      barrierDismissible: false,
       context: context,
       builder: (context) {
         return AlertDialog(
@@ -163,13 +163,21 @@ class _ExpenseManagementState extends State<ExpenseManagement> {
             },
           ),
           actions: [
-            TextButton(
-                onPressed: _saveExpense,
-                child: Text(_selectedExpense.id == null ? 'Insert' : 'Update'))
+            TextButton(onPressed: _cancel, child: Text('Cancel')),
+            TextButton(onPressed: _saveExpense, child: Text(_selectedExpense.id == null ? 'Insert' : 'Update'))
           ],
         );
       },
     );
+  }
+
+  _cancel() {
+    setState(() {
+      _selectedExpense = Expense();
+      _ctrlTitle.clear();
+    });
+
+    Navigator.of(context).pop();
   }
 
   _saveExpense() async {

@@ -8,13 +8,17 @@ part of 'expense_details.dart';
 
 ExpenseDetails _$ExpenseDetailsFromJson(Map<String, dynamic> json) {
   return ExpenseDetails(
-    id: json['id'] as int?,
-    date: json['date'] == null ? null : DateTime.parse(json['date'] as String),
-    quantity: json['quantity'] as int?,
-    price: json['price'] as num?,
     itemId: json['item_id'] as int?,
     expenseId: json['expense_id'] as int?,
-  );
+  )
+    ..id = json['id'] as int?
+    ..createdOn = DateTime.parse(json['created_on'] as String)
+    ..modifiedOn = json['modified_on'] == null
+        ? null
+        : DateTime.parse(json['modified_on'] as String)
+    ..date = DateTime.parse(json['date'] as String)
+    ..quantity = json['quantity'] as int
+    ..price = json['price'] as num;
 }
 
 Map<String, dynamic> _$ExpenseDetailsToJson(ExpenseDetails instance) {
@@ -27,7 +31,9 @@ Map<String, dynamic> _$ExpenseDetailsToJson(ExpenseDetails instance) {
   }
 
   writeNotNull('id', instance.id);
-  val['date'] = instance.date?.toIso8601String();
+  val['created_on'] = instance.createdOn.toIso8601String();
+  val['modified_on'] = instance.modifiedOn?.toIso8601String();
+  val['date'] = instance.date.toIso8601String();
   val['quantity'] = instance.quantity;
   val['price'] = instance.price;
   val['item_id'] = instance.itemId;

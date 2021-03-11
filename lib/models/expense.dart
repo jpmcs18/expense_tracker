@@ -1,20 +1,18 @@
 import 'package:json_annotation/json_annotation.dart';
 
+import 'model_base.dart';
+
 part 'expense.g.dart';
 
 @JsonSerializable()
-class Expense {
-  @JsonKey(includeIfNull: false)
-  int? id;
+class Expense extends ModelBase {
   String? title;
   @JsonKey(ignore: true)
-  DateTime? dateFrom;
+  String dateRange = "";
   @JsonKey(ignore: true)
-  DateTime? dateTo;
-  @JsonKey(ignore: true)
-  num? totalPrice;
+  num totalPrice = 0;
 
-  Expense({this.id, this.title, this.dateFrom, this.dateTo, this.totalPrice});
+  Expense({this.title});
 
   factory Expense.fromJson(Map<String, dynamic> json) => _$ExpenseFromJson(json);
 

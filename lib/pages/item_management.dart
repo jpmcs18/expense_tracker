@@ -2,6 +2,7 @@ import 'package:expense_tracker/databases/main_db.dart';
 import 'package:flutter/material.dart';
 import '../models/item.dart';
 import '../models/item_type.dart';
+import 'package:expense_tracker/helpers/extensions/format_extension.dart';
 
 class ItemMangement extends StatefulWidget {
   @override
@@ -15,6 +16,7 @@ class _ItemMangementState extends State<ItemMangement> {
   List<ItemType> _itemTypes = [];
   Item _selectedItem = Item();
   final _ctrlItemDesc = TextEditingController();
+  final _ctrlItemAmount = TextEditingController();
 
   @override
   void initState() {
@@ -41,10 +43,7 @@ class _ItemMangementState extends State<ItemMangement> {
               return Card(
                 child: Dismissible(
                   key: Key(_items[index].id.toString()),
-                  child: ListTile(
-                    title: Text(_items[index].description ?? ""),
-                    subtitle: Text(_items[index].itemType?.description ?? ""),
-                  ),
+                  child: ListTile(title: Text(_items[index].description ?? ""), subtitle: Text(_items[index].itemType?.description ?? ""), trailing: Text(_items[index].amount.format())),
                   background: Card(
                       color: Colors.green,
                       child: Container(
@@ -67,12 +66,10 @@ class _ItemMangementState extends State<ItemMangement> {
                       )),
                   confirmDismiss: (direction) async {
                     if (direction == DismissDirection.endToStart) {
-                      return await _deleteItems(
-                          _items[index].id, _items[index].description);
+                      return await _deleteItems(_items[index].id, _items[index].description);
                     } else {
                       setState(() {
                         _selectedItem = _items[index];
-                        _ctrlItemDesc.text = _selectedItem.description ?? "";
                       });
                       _manageItems();
                       return false;
@@ -95,7 +92,7 @@ class _ItemMangementState extends State<ItemMangement> {
 
   _getItemTypes() async {
     var itemType = await db.getItemTypes();
-    if (itemType != null) {
+    if (itemType.length > 0) {
       setState(() {
         _itemTypes = itemType;
       });
@@ -119,6 +116,10 @@ class _ItemMangementState extends State<ItemMangement> {
   }
 
   _manageItems() {
+    setState(() {
+      _ctrlItemDesc.text = _selectedItem.description ?? "";
+      _ctrlItemAmount.text = _selectedItem.amount.toString();
+    });
     showDialog(
       context: context,
       builder: (context) {
@@ -146,9 +147,10 @@ class _ItemMangementState extends State<ItemMangement> {
                 ),
                 TextFormField(
                   decoration: InputDecoration(labelText: 'Amount'),
+                  controller: _ctrlItemAmount,
                   onChanged: (value) {
                     setState(() {
-                      _selectedItem.amount = value as num;
+                      _selectedItem.amount = num.parse(value);
                     });
                   },
                 ),
@@ -156,16 +158,25 @@ class _ItemMangementState extends State<ItemMangement> {
             ),
           ),
           actions: [
-            TextButton(
-                onPressed: _saveItem,
-                child: Text(_selectedItem.id == null ? 'Insert' : 'Update'))
+            TextButton(onPressed: _cancel, child: Text('Cancel')),
+            TextButton(onPressed: _saveItem, child: Text(_selectedItem.id == null ? 'Insert' : 'Update'))
           ],
         );
       },
     );
   }
 
+  _cancel() {
+    setState(() {
+      _selectedItem = Item();
+      _ctrlItemDesc.clear();
+      _ctrlItemAmount.clear();
+    });
+    Navigator.of(context).pop();
+  }
+
   _saveItem() async {
+    print(_selectedItem.amount);
     if (_selectedItem.id == null)
       await db.insertItem(_selectedItem);
     else
@@ -173,6 +184,7 @@ class _ItemMangementState extends State<ItemMangement> {
     setState(() {
       _selectedItem = Item();
       _ctrlItemDesc.clear();
+      _ctrlItemAmount.clear();
     });
     _getItems();
     Navigator.of(context).pop();
@@ -181,8 +193,7 @@ class _ItemMangementState extends State<ItemMangement> {
   _selectItemType(int? itemTypeId) {
     setState(() {
       _selectedItem.itemTypeId = itemTypeId;
-      _selectedItem.itemType =
-          _itemTypes.where((element) => element.id == itemTypeId).first;
+      _selectedItem.itemType = _itemTypes.where((element) => element.id == itemTypeId).first;
     });
   }
 
@@ -196,7 +207,7 @@ class _ItemMangementState extends State<ItemMangement> {
     }
   }
 
-  Future<bool?> _deleteItems(id) async {
+  Future<bool?> _deleteItems(id, desc) async {
     return showDialog<bool?>(
       context: context,
       barrierDismissible: false,

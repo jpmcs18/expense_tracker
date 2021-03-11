@@ -1,9 +1,12 @@
 import 'dart:io';
 
+import 'package:expense_tracker/helpers/constants/format_constant.dart';
+import 'package:expense_tracker/helpers/db_helpers/creation_helper.dart';
 import 'package:expense_tracker/helpers/db_helpers/expense_details_helper.dart';
 import 'package:expense_tracker/helpers/db_helpers/expense_helper.dart';
 import 'package:expense_tracker/helpers/db_helpers/item_helper.dart';
 import 'package:expense_tracker/helpers/db_helpers/item_type_helper.dart';
+import 'package:expense_tracker/helpers/extensions/format_extension.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
@@ -30,8 +33,7 @@ class MainDB {
   _initDatabase() async {
     Directory appDirectory = await getApplicationDocumentsDirectory();
     String dbPath = join(appDirectory.path, _dbName);
-    return await openDatabase(dbPath,
-        version: _version, onCreate: _onCreate, onUpgrade: _onUpgrade);
+    return await openDatabase(dbPath, version: _version, onCreate: _onCreate, onUpgrade: _onUpgrade);
   }
 
   _onUpgrade(db, int oldVersion, int newVersion) async {}
@@ -39,27 +41,43 @@ class MainDB {
   _onCreate(Database db, int version) async {
     await db.execute('''
       CREATE TABLE ${ItemTypeHelper.tblName} (
-        ${ItemTypeHelper.colId} INTEGER PRIMARY KEY AUTOINCREMENT,
-        ${ItemTypeHelper.colDescription} TEXT NOT NULL
+        ${CreationHelper.colId} INTEGER PRIMARY KEY AUTOINCREMENT,
+        ${ItemTypeHelper.colDescription} TEXT NOT NULL,
+        ${CreationHelper.colCreatedOn} TEXT NOT NULL,
+        ${CreationHelper.colModifiedOn} TEXT NULL
       )
     ''');
 
     await db.execute('''
-        ${ItemHelper.colId} INTEGER PRIMARY KEY AUTOINCREMENT,
+      CREATE TABLE ${ItemHelper.tblName} (
+        ${CreationHelper.colId} INTEGER PRIMARY KEY AUTOINCREMENT,
         ${ItemHelper.colItemTypeId} INTEGER NOT NULL,
         ${ItemHelper.colDescription} TEXT NOT NULL,
-        ${ItemHelper.colItemAmount} REAL NOT NULL
+        ${ItemHelper.colAmount} REAL NOT NULL,
+        ${CreationHelper.colCreatedOn} TEXT NOT NULL,
+        ${CreationHelper.colModifiedOn} TEXT NULL
       )
     ''');
 
     await db.execute('''
       CREATE TABLE ${ExpenseDetailsHelper.tblName} (
-        ${ExpenseDetailsHelper.colId} INTEGER PRIMARY KEY AUTOINCREMENT,
+        ${CreationHelper.colId} INTEGER PRIMARY KEY AUTOINCREMENT,
         ${ExpenseDetailsHelper.colDate} TEXT NOT NULL,
         ${ExpenseDetailsHelper.colQuantity} INTEGER NOT NULL,
         ${ExpenseDetailsHelper.colPrice} REAL NOT NULL,
         ${ExpenseDetailsHelper.colItemId} INTEGER NOT NULL,
-        ${ExpenseDetailsHelper.colExpenseId} INTEGER NOT NULL
+        ${ExpenseDetailsHelper.colExpenseId} INTEGER NOT NULL,
+        ${CreationHelper.colCreatedOn} TEXT NOT NULL,
+        ${CreationHelper.colModifiedOn} TEXT NULL
+      )
+    ''');
+
+    await db.execute('''
+      CREATE TABLE ${ExpenseHelper.tblName} (
+        ${CreationHelper.colId} INTEGER PRIMARY KEY AUTOINCREMENT,
+        ${ExpenseHelper.colTitle} TEXT NOT NULL,
+        ${CreationHelper.colCreatedOn} TEXT NOT NULL,
+        ${CreationHelper.colModifiedOn} TEXT NULL
       )
     ''');
   }
@@ -77,7 +95,7 @@ class MainDB {
   }
 
   Future<ItemType?> _getItemType(Database d, int id) async {
-    List<Map> res = await d.query(ItemTypeHelper.tblName, where: '${ItemTypeHelper.colId} = ?', whereArgs: [
+    List<Map> res = await d.query(ItemTypeHelper.tblName, where: '${CreationHelper.colId} = ?', whereArgs: [
       id
     ]);
     return res.length == 0 ? null : res.map<ItemType>((e) => ItemType.fromJson(e as Map<String, dynamic>)).first;
@@ -93,14 +111,15 @@ class MainDB {
 
   Future<int> updateItemType(ItemType itemType) async {
     Database d = (await db)!;
-    return await d.update(ItemTypeHelper.tblName, itemType.toJson(), where: '${ItemTypeHelper.colId} = ?', whereArgs: [
+    itemType.modifiedOn = DateTime.now();
+    return await d.update(ItemTypeHelper.tblName, itemType.toJson(), where: '${CreationHelper.colId} = ?', whereArgs: [
       itemType.id
     ]);
   }
 
   Future<int> deleteItemType(int id) async {
     Database d = (await db)!;
-    return await d.delete(ItemTypeHelper.tblName, where: '${ItemTypeHelper.colId} = ?', whereArgs: [
+    return await d.delete(ItemTypeHelper.tblName, where: '${CreationHelper.colId} = ?', whereArgs: [
       id
     ]);
   }
@@ -126,7 +145,7 @@ class MainDB {
   }
 
   Future<Item?> _getItem(Database d, int id) async {
-    List<Map> res = await d.query(ItemHelper.tblName, where: '${ItemHelper.colId} = ?', whereArgs: [
+    List<Map> res = await d.query(ItemHelper.tblName, where: '${CreationHelper.colId} = ?', whereArgs: [
       id
     ]);
     if (res.length > 0)
@@ -145,14 +164,15 @@ class MainDB {
 
   Future<int> updateItem(Item item) async {
     Database d = (await db)!;
-    return await d.update(ItemHelper.tblName, item.toJson(), where: '${ItemHelper.colId} = ?', whereArgs: [
+    item.modifiedOn = DateTime.now();
+    return await d.update(ItemHelper.tblName, item.toJson(), where: '${CreationHelper.colId} = ?', whereArgs: [
       item.id
     ]);
   }
 
   Future<int> deleteItem(int id) async {
     Database d = (await db)!;
-    return await d.delete(ItemHelper.tblName, where: '${ItemHelper.colId} = ?', whereArgs: [
+    return await d.delete(ItemHelper.tblName, where: '${CreationHelper.colId} = ?', whereArgs: [
       id
     ]);
   }
@@ -168,11 +188,11 @@ class MainDB {
       for (var r in res) {
         var ex = Expense.fromJson(r as Map<String, dynamic>);
         var exd = await getExpenseDetails(ex.id ?? 0);
+        ex.dateRange = FormatConstant.date;
         if (exd.length > 0) {
-          exd.sort((a, b) => a.date!.compareTo(b.date!));
-          ex.dateFrom = exd.first.date;
-          ex.dateTo = exd.last.date;
-          ex.totalPrice = exd.fold(0, (previous, current) => (previous ?? 0) + current.totalPrice);
+          exd.sort((a, b) => a.date.compareTo(b.date));
+          ex.dateRange = DateRangeFormatter.format(exd.first.date, exd.last.date);
+          ex.totalPrice = exd.fold(0, (previous, current) => previous + current.totalPrice);
         }
         exps.add(ex);
       }
@@ -181,7 +201,7 @@ class MainDB {
 
   Future<Expense?> getExpense(int id) async {
     Database d = (await db)!;
-    List<Map> res = await d.query(ExpenseHelper.tblName, where: '${ExpenseHelper.colId} = ?', whereArgs: [
+    List<Map> res = await d.query(ExpenseHelper.tblName, where: '${CreationHelper.colId} = ?', whereArgs: [
       id
     ]);
     if (res.length > 0)
@@ -198,15 +218,16 @@ class MainDB {
   }
 
   Future<int> updateExpense(Expense expense) async {
-      Database d = (await db)!;
-      return await d.update(ExpenseHelper.tblName, expense.toJson(), where: '${ExpenseHelper.colId} = ?', whereArgs: [
+    Database d = (await db)!;
+    expense.modifiedOn = DateTime.now();
+    return await d.update(ExpenseHelper.tblName, expense.toJson(), where: '${CreationHelper.colId} = ?', whereArgs: [
       expense.id
     ]);
   }
 
   Future<int> deleteExpense(int id) async {
     Database d = (await db)!;
-    return await d.delete(ExpenseHelper.tblName, where: '${ExpenseHelper.colId} = ?', whereArgs: [
+    return await d.delete(ExpenseHelper.tblName, where: '${CreationHelper.colId} = ?', whereArgs: [
       id
     ]);
   }
@@ -217,7 +238,7 @@ class MainDB {
     Database d = (await db)!;
     List<Map> res = await d.query(ExpenseDetailsHelper.tblName, where: '${ExpenseDetailsHelper.colExpenseId} = ?', whereArgs: [
       expenseId
-    ]);
+    ], orderBy: '${ExpenseDetailsHelper.colDate} DESC');
     List<ExpenseDetails> exps = [];
     if (res.length > 0)
       for (var r in res) {
@@ -230,7 +251,7 @@ class MainDB {
 
   Future<ExpenseDetails?> getExpenseDetail(int id) async {
     Database d = (await db)!;
-    List<Map> res = await d.query(ExpenseDetailsHelper.tblName, where: '${ExpenseDetailsHelper.colId} = ?', whereArgs: [
+    List<Map> res = await d.query(ExpenseDetailsHelper.tblName, where: '${CreationHelper.colId} = ?', whereArgs: [
       id
     ]);
     if (res.length > 0)
@@ -249,14 +270,15 @@ class MainDB {
 
   Future<int> updateExpenseDetails(ExpenseDetails expenseDetail) async {
     Database d = (await db)!;
-    return await d.update(ExpenseDetailsHelper.tblName, expenseDetail.toJson(), where: '${ExpenseDetailsHelper.colId} = ?', whereArgs: [
+    expenseDetail.modifiedOn = DateTime.now();
+    return await d.update(ExpenseDetailsHelper.tblName, expenseDetail.toJson(), where: '${CreationHelper.colId} = ?', whereArgs: [
       expenseDetail.id
     ]);
   }
 
   Future<int> deleteExpenseDetails(int id) async {
     Database d = (await db)!;
-    return await d.delete(ExpenseDetailsHelper.tblName, where: '${ExpenseDetailsHelper.colId} = ?', whereArgs: [
+    return await d.delete(ExpenseDetailsHelper.tblName, where: '${CreationHelper.colId} = ?', whereArgs: [
       id
     ]);
   }

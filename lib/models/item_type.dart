@@ -1,14 +1,14 @@
 import 'package:json_annotation/json_annotation.dart';
 
+import 'model_base.dart';
+
 part 'item_type.g.dart';
 
 @JsonSerializable()
-class ItemType {
-  @JsonKey(includeIfNull: false)
-  int? id;
+class ItemType extends ModelBase  {
   String? description;
 
-  ItemType({this.id, this.description});
+  ItemType({this.description});
 
   factory ItemType.fromJson(Map<String, dynamic> json) => _$ItemTypeFromJson(json);
 

@@ -2,6 +2,8 @@ import 'package:expense_tracker/databases/main_db.dart';
 import 'package:expense_tracker/models/item.dart';
 import 'package:flutter/material.dart';
 import '../models/item_type.dart';
+import 'package:expense_tracker/helpers/extensions/format_extension.dart';
+import 'package:expense_tracker/helpers/constants/format_constant.dart';
 
 class ItemTypeMangement extends StatefulWidget {
   @override
@@ -42,15 +44,14 @@ class _ItemTypeMangementState extends State<ItemTypeMangement> {
                 child: Dismissible(
                   key: Key(_itemTypes[index].id.toString()),
                   child: ListTile(
-                    title: Container(
-                      child: Row(
+                      title: Container(
+                          child: Row(
                         children: [
                           Expanded(child: Text(_itemTypes[index].description ?? ""))
                         ],
-                      ),
-                      trailing: Text(
-                          '${_items.where((e) => e.itemTypeId == _itemTypes[index].id).length ?? 0} item/s')),
-                  //_itemTypes[index].id.toString())),
+                      )),
+                      subtitle: Text(_itemTypes[index].createdOn.formatLocalize()),
+                      trailing: Text('${_getItemCount(_itemTypes[index].id)} item/s')),
                   background: Card(
                       color: Colors.green,
                       child: Container(
@@ -73,12 +74,10 @@ class _ItemTypeMangementState extends State<ItemTypeMangement> {
                       )),
                   confirmDismiss: (direction) async {
                     if (direction == DismissDirection.endToStart) {
-                      return await _deleteItemType(
-                          _itemTypes[index].id, _itemTypes[index].description);
+                      return await _deleteItemType(_itemTypes[index].id, _itemTypes[index].description);
                     } else {
                       setState(() {
                         _selectedItemType = _itemTypes[index];
-                        _ctrlItemTypeDesc.text = _selectedItemType.description ?? "";
                       });
                       _manageItemType();
                       return false;
@@ -93,35 +92,42 @@ class _ItemTypeMangementState extends State<ItemTypeMangement> {
     );
   }
 
-  Future<bool?> _deleteItemType(id) async {
+  Future<bool?> _deleteItemType(id, desc) async {
     return showDialog<bool?>(
       context: context,
       barrierDismissible: false,
       builder: (context) {
         return AlertDialog(
-            title: Text(
-              "Deleting",
+          title: Text(
+            "Deleting",
+          ),
+          content: Text(
+            "Do you want to delete $desc?",
+          ),
+          actions: [
+            TextButton(
+              child: Text('Ok'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
             ),
-            content: Text(
-              "Do you want to delete this item type?",
-            ),
-            actions: [
-              TextButton(
-                child: Text('Ok'),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-            ],
-          );
-        },
-      );
-    }
+          ],
+        );
+      },
+    );
+  }
+
+  _getItemCount(int? itemType) {
+    return _items.where((e) => e.itemTypeId == itemType).length;
   }
 
   _manageItemType() {
+    setState(() {
+      _ctrlItemTypeDesc.text = _selectedItemType.description ?? "";
+    });
     showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (context) {
         return AlertDialog(
           title: Text('Manage Item Type'),
@@ -135,13 +141,20 @@ class _ItemTypeMangementState extends State<ItemTypeMangement> {
             },
           ),
           actions: [
-            TextButton(
-                onPressed: _saveItemType,
-                child: Text(_selectedItemType.id == null ? 'Insert' : 'Update'))
+            TextButton(onPressed: _cancel, child: Text('Cancel')),
+            TextButton(onPressed: _saveItemType, child: Text(_selectedItemType.id == null ? 'Insert' : 'Update'))
           ],
         );
       },
     );
+  }
+
+  _cancel() {
+    setState(() {
+      _selectedItemType = ItemType();
+      _ctrlItemTypeDesc.clear();
+    });
+    Navigator.of(context).pop();
   }
 
   _saveItemType() async {
@@ -167,7 +180,7 @@ class _ItemTypeMangementState extends State<ItemTypeMangement> {
   _getItems() async {
     var items = await db.getItems();
     print(items.length);
-    if (items != null) {
+    if (items.length > 0) {
       setState(() {
         _items = items;
       });
