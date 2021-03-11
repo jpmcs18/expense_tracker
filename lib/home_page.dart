@@ -30,6 +30,7 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       primary: true,
       bottomNavigationBar: Card(
+        margin: EdgeInsets.all(0),
         child: Row(
           children: _menuItems.map((menu) {
             return Expanded(child: TextButton(onPressed: () { 

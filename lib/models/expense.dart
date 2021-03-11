@@ -12,6 +12,9 @@ class Expense extends ModelBase {
   @JsonKey(ignore: true)
   num totalPrice = 0;
 
+  @JsonKey(ignore: true)
+  int reference = 0;
+
   Expense({this.title});
 
   factory Expense.fromJson(Map<String, dynamic> json) => _$ExpenseFromJson(json);

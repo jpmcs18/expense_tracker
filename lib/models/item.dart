@@ -11,6 +11,9 @@ class Item extends ModelBase {
   @JsonKey(name: 'item_type_id')
   int? itemTypeId;
   num amount = 0;
+  
+  @JsonKey(ignore: true)
+  int reference = 0;
 
   @JsonKey(ignore: true)
   ItemType? itemType;

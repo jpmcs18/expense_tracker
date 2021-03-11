@@ -22,6 +22,9 @@ class ExpenseDetails extends ModelBase {
   bool isHead = false;
   
   @JsonKey(ignore: true)
+  bool isBottom = false;
+  
+  @JsonKey(ignore: true)
   num get totalPrice {
     return price * quantity;
   }

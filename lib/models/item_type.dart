@@ -5,8 +5,10 @@ import 'model_base.dart';
 part 'item_type.g.dart';
 
 @JsonSerializable()
-class ItemType extends ModelBase  {
+class ItemType extends ModelBase {
   String? description;
+  @JsonKey(ignore: true)
+  int reference = 0;
 
   ItemType({this.description});
 

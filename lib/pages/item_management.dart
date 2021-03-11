@@ -4,6 +4,9 @@ import '../models/item.dart';
 import '../models/item_type.dart';
 import 'package:expense_tracker/helpers/extensions/format_extension.dart';
 
+import 'components/delete_record.dart';
+import 'components/item_manager.dart';
+
 class ItemMangement extends StatefulWidget {
   @override
   _ItemMangementState createState() => _ItemMangementState();
@@ -11,17 +14,13 @@ class ItemMangement extends StatefulWidget {
 
 class _ItemMangementState extends State<ItemMangement> {
   MainDB db = MainDB.instance;
-  List<Item> _items = [];
-  List<DropdownMenuItem<int>> _dropDownItemTypes = [];
-  List<ItemType> _itemTypes = [];
+  final List<Item> _items = [];
   Item _selectedItem = Item();
-  final _ctrlItemDesc = TextEditingController();
-  final _ctrlItemAmount = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    _initStatesAsync();
+    _getItems();
   }
 
   @override
@@ -31,170 +30,66 @@ class _ItemMangementState extends State<ItemMangement> {
         title: Row(
           children: [
             Expanded(child: Text('Items')),
-            IconButton(icon: Icon(Icons.add), onPressed: _manageItems),
+            IconButton(icon: Icon(Icons.add), onPressed: _addNewItem),
           ],
         ),
       ),
-      body: Card(
-        child: Container(
-          child: ListView.builder(
-            itemCount: _items.length,
-            itemBuilder: (context, index) {
-              return Card(
-                child: Dismissible(
-                  key: Key(_items[index].id.toString()),
-                  child: ListTile(title: Text(_items[index].description ?? ""), subtitle: Text(_items[index].itemType?.description ?? ""), trailing: Text(_items[index].amount.format())),
-                  background: Card(
-                      color: Colors.green,
-                      child: Container(
-                        alignment: Alignment.centerLeft,
-                        padding: EdgeInsets.fromLTRB(20, 5, 0, 5),
-                        child: Icon(
-                          Icons.edit,
-                          color: Colors.white,
-                        ),
-                      )),
-                  secondaryBackground: Card(
-                      color: Colors.red,
-                      child: Container(
-                        alignment: Alignment.centerRight,
-                        padding: EdgeInsets.fromLTRB(0, 5, 20, 5),
-                        child: Icon(
-                          Icons.delete,
-                          color: Colors.white,
-                        ),
-                      )),
-                  confirmDismiss: (direction) async {
-                    if (direction == DismissDirection.endToStart) {
-                      return await _deleteItems(_items[index].id, _items[index].description);
-                    } else {
-                      setState(() {
-                        _selectedItem = _items[index];
-                      });
-                      _manageItems();
-                      return false;
-                    }
-                  },
-                ),
-              );
-            },
-          ),
-        ),
-      ),
-    );
-  }
-
-  _initStatesAsync() async {
-    await _getItems();
-    await _getItemTypes();
-    await _setItemTypeToDropDownItemTypes();
-  }
-
-  _getItemTypes() async {
-    var itemType = await db.getItemTypes();
-    if (itemType.length > 0) {
-      setState(() {
-        _itemTypes = itemType;
-      });
-    }
-  }
-
-  _setItemTypeToDropDownItemTypes() async {
-    List<DropdownMenuItem<int>> dditemType = [];
-    if (_itemTypes.length > 0) {
-      for (var itemType in _itemTypes) {
-        dditemType.add(DropdownMenuItem(
-          child: Text(itemType.description ?? ""),
-          value: itemType.id,
-        ));
-      }
-    }
-
-    setState(() {
-      _dropDownItemTypes = dditemType;
-    });
-  }
-
-  _manageItems() {
-    setState(() {
-      _ctrlItemDesc.text = _selectedItem.description ?? "";
-      _ctrlItemAmount.text = _selectedItem.amount.toString();
-    });
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text('Manage Item'),
-          content: Form(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextFormField(
-                  decoration: InputDecoration(labelText: 'Description'),
-                  controller: _ctrlItemDesc,
-                  onChanged: (value) {
-                    setState(() {
-                      _selectedItem.description = value;
-                    });
-                  },
-                ),
-                DropdownButtonFormField(
-                  items: _dropDownItemTypes,
-                  value: _selectedItem.itemTypeId,
-                  onChanged: _selectItemType,
-                  isExpanded: true,
-                  decoration: InputDecoration(labelText: 'Item Type'),
-                ),
-                TextFormField(
-                  decoration: InputDecoration(labelText: 'Amount'),
-                  controller: _ctrlItemAmount,
-                  onChanged: (value) {
-                    setState(() {
-                      _selectedItem.amount = num.parse(value);
-                    });
-                  },
-                ),
-              ],
+      body: ListView.builder(
+        padding: EdgeInsets.all(5),
+        itemCount: _items.length,
+        itemBuilder: (context, index) {
+          return Card(
+            margin: EdgeInsets.only(top: 2),
+            child: Dismissible(
+              key: Key(_items[index].id.toString()),
+              child: ListTile(title: Text(_items[index].description ?? ""), subtitle: Text(_items[index].itemType?.description ?? ""), trailing: Text(_items[index].amount.format())),
+              background: Card(
+                  color: Colors.green,
+                  child: Container(
+                    alignment: Alignment.centerLeft,
+                    padding: EdgeInsets.fromLTRB(20, 5, 0, 5),
+                    child: Icon(
+                      Icons.edit,
+                      color: Colors.white,
+                    ),
+                  )),
+              secondaryBackground: Card(
+                  color: Colors.red,
+                  child: Container(
+                    alignment: Alignment.centerRight,
+                    padding: EdgeInsets.fromLTRB(0, 5, 20, 5),
+                    child: Icon(
+                      Icons.delete,
+                      color: Colors.white,
+                    ),
+                  )),
+              confirmDismiss: (direction) async {
+                if (direction == DismissDirection.endToStart) {
+                  return await _deleteItems(_items[index].id, _items[index].description);
+                } else {
+                  setState(() {
+                    _selectedItem = _items[index];
+                  });
+                  _manageItem();
+                  return false;
+                }
+              },
             ),
-          ),
-          actions: [
-            TextButton(onPressed: _cancel, child: Text('Cancel')),
-            TextButton(onPressed: _saveItem, child: Text(_selectedItem.id == null ? 'Insert' : 'Update'))
-          ],
-        );
-      },
+          );
+        },
+      ),
     );
   }
 
-  _cancel() {
+  _addNewItem() {
     setState(() {
       _selectedItem = Item();
-      _ctrlItemDesc.clear();
-      _ctrlItemAmount.clear();
     });
-    Navigator.of(context).pop();
+    _manageItem();
   }
 
-  _saveItem() async {
-    print(_selectedItem.amount);
-    if (_selectedItem.id == null)
-      await db.insertItem(_selectedItem);
-    else
-      await db.updateItem(_selectedItem);
-    setState(() {
-      _selectedItem = Item();
-      _ctrlItemDesc.clear();
-      _ctrlItemAmount.clear();
-    });
-    _getItems();
-    Navigator.of(context).pop();
-  }
-
-  _selectItemType(int? itemTypeId) {
-    setState(() {
-      _selectedItem.itemTypeId = itemTypeId;
-      _selectedItem.itemType = _itemTypes.where((element) => element.id == itemTypeId).first;
-    });
+  _manageItem() async {
+    if ((await showItemManager(context, _selectedItem)) ?? false) _getItems();
   }
 
   _getItems() async {
@@ -202,37 +97,16 @@ class _ItemMangementState extends State<ItemMangement> {
     print(items.length);
     if (items.length > 0) {
       setState(() {
-        _items = items;
+        _items.clear();
+        _items.addAll(items);
       });
     }
   }
 
   Future<bool?> _deleteItems(id, desc) async {
-    return showDialog<bool?>(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) {
-        return AlertDialog(
-            title: Text(
-              "Delete",
-            ),
-            content: Text(
-              "Continue deleting Item '$desc'?",
-            ),
-            actions: [
-              TextButton(
-                  onPressed: () async {
-                    var b = (await db.deleteItem(id)) > 0;
-                    Navigator.of(context).pop(b);
-                  },
-                  child: Text('Yes')),
-              TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop(false);
-                  },
-                  child: Text('No')),
-            ]);
-      },
-    );
+    if ((await showDeleteRecordManager(context, "Deleting", "Continue deleting Item '$desc'?")) ?? false) {
+      return (await db.deleteItem(id)) > 0;
+    }
+    return false;
   }
 }

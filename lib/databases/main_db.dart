@@ -85,8 +85,22 @@ class MainDB {
   //ITEM TYPES MANAGEMENT
   Future<List<ItemType>> getItemTypes() async {
     Database d = (await db)!;
-    List<Map> res = await d.query(ItemTypeHelper.tblName);
-    return res.length == 0 ? [] : res.map<ItemType>((e) => ItemType.fromJson(e as Map<String, dynamic>)).toList();
+    List<Map> res = await d.rawQuery('''
+      SELECT *,
+        (
+          SELECT COUNT(${CreationHelper.colId})
+          FROM ${ItemHelper.tblName}
+          WHERE ${ItemHelper.colItemTypeId} = ${ItemTypeHelper.tblName}.${CreationHelper.colId}
+        ) reference
+      FROM ${ItemTypeHelper.tblName}
+    ''');
+    return res.length == 0
+        ? []
+        : res.map<ItemType>((e) {
+            var i = ItemType.fromJson(e as Map<String, dynamic>);
+            i.reference = e['reference'] as int;
+            return i;
+          }).toList();
   }
 
   Future<ItemType?> getItemType(int id) async {
@@ -128,12 +142,21 @@ class MainDB {
   //ITEMS MANAGEMENT
   Future<List<Item>> getItems() async {
     Database d = (await db)!;
-    List<Map> res = await d.query(ItemHelper.tblName);
+    List<Map> res = await d.rawQuery('''
+      SELECT *,
+        (
+          SELECT COUNT(${CreationHelper.colId})
+          FROM ${ExpenseDetailsHelper.tblName}
+          WHERE ${ExpenseDetailsHelper.colItemId} = ${ItemHelper.tblName}.${CreationHelper.colId}
+        ) reference
+      FROM ${ItemHelper.tblName}
+    ''');
     List<Item> itms = [];
     if (res.length > 0)
       for (var r in res) {
         var i = Item.fromJson(r as Map<String, dynamic>);
         i.itemType = await _getItemType(d, i.itemTypeId ?? 0);
+        i.reference = r['reference'];
         itms.add(i);
       }
     return res.length == 0 ? [] : itms;
@@ -236,9 +259,12 @@ class MainDB {
   //EXPENSE DETAILS MANAGEMENT
   Future<List<ExpenseDetails>> getExpenseDetails(int expenseId) async {
     Database d = (await db)!;
-    List<Map> res = await d.query(ExpenseDetailsHelper.tblName, where: '${ExpenseDetailsHelper.colExpenseId} = ?', whereArgs: [
-      expenseId
-    ], orderBy: '${ExpenseDetailsHelper.colDate} DESC');
+    List<Map> res = await d.query(ExpenseDetailsHelper.tblName,
+        where: '${ExpenseDetailsHelper.colExpenseId} = ?',
+        whereArgs: [
+          expenseId
+        ],
+        orderBy: '${ExpenseDetailsHelper.colDate} DESC');
     List<ExpenseDetails> exps = [];
     if (res.length > 0)
       for (var r in res) {
