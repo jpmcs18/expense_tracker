@@ -1,7 +1,6 @@
-import 'package:expense_tracker/models/item_type.dart';
+import 'package:expense_management/models/item_type.dart';
+import 'package:expense_management/models/model_base.dart';
 import 'package:json_annotation/json_annotation.dart';
-
-import 'model_base.dart';
 
 part 'item.g.dart';
 
@@ -11,12 +10,18 @@ class Item extends ModelBase {
   @JsonKey(name: 'item_type_id')
   int? itemTypeId;
   num amount = 0;
-  
+
   @JsonKey(ignore: true)
   int reference = 0;
 
   @JsonKey(ignore: true)
   ItemType? itemType;
+
+  @JsonKey(ignore: true)
+  bool isHead = false;
+
+  @JsonKey(ignore: true)
+  bool isBottom = false;
 
   Item({this.itemTypeId, this.description});
 

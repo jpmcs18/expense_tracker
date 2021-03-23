@@ -1,8 +1,7 @@
-import 'package:expense_tracker/databases/main_db.dart';
-import 'package:expense_tracker/models/item_type.dart';
+import 'package:expense_management/databases/main_db.dart';
+import 'package:expense_management/models/item_type.dart';
 import 'package:flutter/material.dart';
-
-import 'modal_base.dart';
+import 'package:expense_management/modals/modal_base.dart';
 
 Future<bool?> showItemTypeManager(context, itemType) async {
   return await showModalBottomSheet<bool?>(
@@ -55,7 +54,9 @@ class ItemTypeManagerState extends State<ItemTypeManager> {
         ),
         [
           TextButton(onPressed: _cancel, child: Text('Cancel')),
-          TextButton(onPressed: _saveItemType, child: Text(_itemType.id == null ? 'Insert' : 'Update'))
+          TextButton(
+              onPressed: _saveItemType,
+              child: Text(_itemType.id == null ? 'Insert' : 'Update'))
         ],
         header: "Manage Item Type");
   }

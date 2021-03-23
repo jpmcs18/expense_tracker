@@ -20,10 +20,10 @@ class ExpenseDetails extends ModelBase {
 
   @JsonKey(ignore: true)
   bool isHead = false;
-  
+
   @JsonKey(ignore: true)
   bool isBottom = false;
-  
+
   @JsonKey(ignore: true)
   num get totalPrice {
     return price * quantity;
@@ -31,7 +31,8 @@ class ExpenseDetails extends ModelBase {
 
   ExpenseDetails({this.itemId, this.item, this.expenseId});
 
-  factory ExpenseDetails.fromJson(Map<String, dynamic> json) => _$ExpenseDetailsFromJson(json);
+  factory ExpenseDetails.fromJson(Map<String, dynamic> json) =>
+      _$ExpenseDetailsFromJson(json);
 
   Map<String, dynamic> toJson() => _$ExpenseDetailsToJson(this);
 }

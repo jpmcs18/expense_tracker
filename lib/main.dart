@@ -1,5 +1,6 @@
+import 'package:expense_management/pages/expenses.dart';
+import 'package:expense_management/pages/landing_screen.dart';
 import 'package:flutter/material.dart';
-import './home_page.dart';
 
 void main() {
   runApp(MyApp());
@@ -12,9 +13,31 @@ class MyApp extends StatelessWidget {
       title: 'Expenses',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        brightness: Brightness.dark,
+        primaryColor: Colors.blue[700],
+        accentColor: Colors.white,
+        canvasColor: Colors.blue[50],
+        cardColor: Colors.white,
+        buttonColor: Colors.blue[300],
+        // brightness: Brightness.light
       ),
-      home: HomePage(),
+      initialRoute: LandingPage.route,
+      onGenerateRoute: (setting) {
+        switch (setting.name) {
+          case LandingPage.route:
+            return _buildRoute(setting, LandingPage());
+          case Expenses.route:
+            return _buildRoute(setting, Expenses());
+          default:
+            return _buildRoute(setting, LandingPage());
+        }
+      },
+    );
+  }
+
+  MaterialPageRoute _buildRoute(RouteSettings settings, Widget page) {
+    return new MaterialPageRoute(
+      settings: settings,
+      builder: (ctx) => page,
     );
   }
 }

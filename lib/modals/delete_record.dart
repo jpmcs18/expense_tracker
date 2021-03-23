@@ -1,6 +1,5 @@
+import 'package:expense_management/modals/modal_base.dart';
 import 'package:flutter/material.dart';
-
-import 'modal_base.dart';
 
 Future<bool?> showDeleteRecordManager(context, title, body) async {
   return await showModalBottomSheet<bool?>(

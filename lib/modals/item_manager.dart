@@ -1,9 +1,8 @@
-import 'package:expense_tracker/databases/main_db.dart';
-import 'package:expense_tracker/models/item.dart';
-import 'package:expense_tracker/models/item_type.dart';
+import 'package:expense_management/databases/main_db.dart';
+import 'package:expense_management/modals/modal_base.dart';
+import 'package:expense_management/models/item.dart';
+import 'package:expense_management/models/item_type.dart';
 import 'package:flutter/material.dart';
-
-import 'modal_base.dart';
 
 Future<bool?> showItemManager(context, item) async {
   return await showModalBottomSheet<bool?>(
@@ -73,6 +72,7 @@ class ItemManagerState extends State<ItemManager> {
               TextFormField(
                 decoration: InputDecoration(labelText: 'Amount'),
                 controller: _ctrlItemAmount,
+                keyboardType: TextInputType.number,
                 onChanged: (value) {
                   setState(() {
                     _item.amount = num.parse(value);
@@ -84,7 +84,9 @@ class ItemManagerState extends State<ItemManager> {
         ),
         [
           TextButton(onPressed: _cancel, child: Text('Cancel')),
-          TextButton(onPressed: _saveItem, child: Text(_item.id == null ? 'Insert' : 'Update'))
+          TextButton(
+              onPressed: _saveItem,
+              child: Text(_item.id == null ? 'Insert' : 'Update'))
         ],
         header: "Manage Item");
   }
@@ -97,7 +99,8 @@ class ItemManagerState extends State<ItemManager> {
   _selectItemType(int? itemTypeId) {
     setState(() {
       _item.itemTypeId = itemTypeId;
-      _item.itemType = _itemTypes.where((element) => element.id == itemTypeId).first;
+      _item.itemType =
+          _itemTypes.where((element) => element.id == itemTypeId).first;
     });
   }
 

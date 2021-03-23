@@ -1,8 +1,8 @@
-import 'package:expense_tracker/databases/main_db.dart';
-import 'package:expense_tracker/models/expense_details.dart';
-import 'package:expense_tracker/models/item.dart';
-import 'package:expense_tracker/pages/components/modal_base.dart';
-import 'package:expense_tracker/helpers/extensions/format_extension.dart';
+import 'package:expense_management/databases/main_db.dart';
+import 'package:expense_management/modals/modal_base.dart';
+import 'package:expense_management/models/expense_details.dart';
+import 'package:expense_management/models/item.dart';
+import 'package:expense_management/helpers/extensions/format_extension.dart';
 import 'package:flutter/material.dart';
 
 Future<bool?> showExpenseDetailManager(context, expenseDetail) async {
@@ -78,6 +78,7 @@ class ExpenseDetailManagerState extends State<ExpenseDetailManager> {
               TextFormField(
                 decoration: InputDecoration(labelText: 'Quantity'),
                 controller: _ctrlQuantity,
+                keyboardType: TextInputType.number,
                 onChanged: (value) {
                   setState(() {
                     _expenseDetail.quantity = int.parse(value);
@@ -88,6 +89,7 @@ class ExpenseDetailManagerState extends State<ExpenseDetailManager> {
               TextFormField(
                 decoration: InputDecoration(labelText: 'Price'),
                 controller: _ctrlPrice,
+                keyboardType: TextInputType.number,
                 onChanged: (value) {
                   setState(() {
                     _expenseDetail.price = num.parse(value);
@@ -105,7 +107,9 @@ class ExpenseDetailManagerState extends State<ExpenseDetailManager> {
         ),
         [
           TextButton(onPressed: _cancel, child: Text('Cancel')),
-          TextButton(onPressed: _saveExpenseDetail, child: Text(_expenseDetail.id == null ? 'Insert' : 'Update'))
+          TextButton(
+              onPressed: _saveExpenseDetail,
+              child: Text(_expenseDetail.id == null ? 'Insert' : 'Update'))
         ],
         header: "Manage Expense Details");
   }
@@ -141,20 +145,30 @@ class ExpenseDetailManagerState extends State<ExpenseDetailManager> {
   _selectItem(int? itemId) {
     setState(() {
       _expenseDetail.itemId = itemId;
-      _expenseDetail.item = _items.where((element) => element.id == itemId).first;
+      _expenseDetail.item =
+          _items.where((element) => element.id == itemId).first;
       _expenseDetail.price = _expenseDetail.item?.amount ?? 0;
       _ctrlPrice.text = _expenseDetail.price.toString();
     });
   }
 
   _getDate() async {
-    var date = await showDatePicker(context: context, initialDate: _expenseDetail.date, firstDate: _firstDate, lastDate: _lastDate);
+    var date = await showDatePicker(
+        context: context,
+        initialDate: _expenseDetail.date,
+        firstDate: _firstDate,
+        lastDate: _lastDate);
     if (date != null) {
-      var time = await showTimePicker(context: context, initialTime: TimeOfDay(hour: _expenseDetail.date.hour, minute: _expenseDetail.date.minute));
+      var time = await showTimePicker(
+          context: context,
+          initialTime: TimeOfDay(
+              hour: _expenseDetail.date.hour,
+              minute: _expenseDetail.date.minute));
 
       if (time != null) {
         setState(() {
-          _expenseDetail.date = DateTime(date.year, date.month, date.day, time.hour, time.minute);
+          _expenseDetail.date =
+              DateTime(date.year, date.month, date.day, time.hour, time.minute);
           _ctrlDate.text = _expenseDetail.date.format();
         });
       }

@@ -12,7 +12,8 @@ class ItemType extends ModelBase {
 
   ItemType({this.description});
 
-  factory ItemType.fromJson(Map<String, dynamic> json) => _$ItemTypeFromJson(json);
+  factory ItemType.fromJson(Map<String, dynamic> json) =>
+      _$ItemTypeFromJson(json);
 
   Map<String, dynamic> toJson() => _$ItemTypeToJson(this);
 }

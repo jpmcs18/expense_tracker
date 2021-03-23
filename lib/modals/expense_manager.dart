@@ -1,6 +1,6 @@
-import 'package:expense_tracker/databases/main_db.dart';
-import 'package:expense_tracker/models/expense.dart';
-import 'package:expense_tracker/pages/components/modal_base.dart';
+import 'package:expense_management/databases/main_db.dart';
+import 'package:expense_management/modals/modal_base.dart';
+import 'package:expense_management/models/expense.dart';
 import 'package:flutter/material.dart';
 
 Future<bool?> showExpenseManager(context, expense) async {
@@ -51,7 +51,9 @@ class ExpenseManagerState extends State<ExpenseManager> {
             }),
         [
           TextButton(onPressed: _cancel, child: Text('Cancel')),
-          TextButton(onPressed: _saveExpense, child: Text(_expense.id == null ? 'Insert' : 'Update'))
+          TextButton(
+              onPressed: _saveExpense,
+              child: Text(_expense.id == null ? 'Insert' : 'Update'))
         ],
         header: "Manage Expense");
   }
