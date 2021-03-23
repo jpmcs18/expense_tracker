@@ -2,6 +2,7 @@ import 'package:expense_management/databases/main_db.dart';
 import 'package:expense_management/modals/modal_base.dart';
 import 'package:expense_management/models/expense.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 Future<bool?> showExpenseManager(context, expense) async {
   return await showModalBottomSheet<bool?>(
@@ -68,14 +69,20 @@ class ExpenseManagerState extends State<ExpenseManager> {
   }
 
   _saveExpense() async {
-    if (_expense.id == null)
-      await db.insertExpense(_expense);
-    else
-      await db.updateExpense(_expense);
-    setState(() {
-      _expense = Expense();
-      _ctrlTitle.clear();
-    });
-    Navigator.of(context).pop(true);
+    try {
+      if (_expense.id == null)
+        await db.insertExpense(_expense);
+      else
+        await db.updateExpense(_expense);
+      setState(() {
+        _expense = Expense();
+        _ctrlTitle.clear();
+      });
+      Navigator.of(context).pop(true);
+    } catch (_) {
+      Fluttertoast.showToast(
+          msg:
+              "Unable to ${_expense.id == null ? 'insert' : 'update'} expense");
+    }
   }
 }

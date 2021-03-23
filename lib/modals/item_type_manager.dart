@@ -2,6 +2,7 @@ import 'package:expense_management/databases/main_db.dart';
 import 'package:expense_management/models/item_type.dart';
 import 'package:flutter/material.dart';
 import 'package:expense_management/modals/modal_base.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 Future<bool?> showItemTypeManager(context, itemType) async {
   return await showModalBottomSheet<bool?>(
@@ -70,14 +71,20 @@ class ItemTypeManagerState extends State<ItemTypeManager> {
   }
 
   _saveItemType() async {
-    if (_itemType.id == null)
-      await db.insertItemType(_itemType);
-    else
-      await db.updateItemType(_itemType);
-    setState(() {
-      _itemType = ItemType();
-      _ctrlItemTypeDesc.clear();
-    });
-    Navigator.of(context).pop(true);
+    try {
+      if (_itemType.id == null)
+        await db.insertItemType(_itemType);
+      else
+        await db.updateItemType(_itemType);
+      setState(() {
+        _itemType = ItemType();
+        _ctrlItemTypeDesc.clear();
+      });
+      Navigator.of(context).pop(true);
+    } catch (_) {
+      Fluttertoast.showToast(
+          msg:
+              "Unable to ${_itemType.id == null ? 'insert' : 'update'} item type");
+    }
   }
 }

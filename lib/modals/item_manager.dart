@@ -3,6 +3,7 @@ import 'package:expense_management/modals/modal_base.dart';
 import 'package:expense_management/models/item.dart';
 import 'package:expense_management/models/item_type.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 Future<bool?> showItemManager(context, item) async {
   return await showModalBottomSheet<bool?>(
@@ -141,16 +142,20 @@ class ItemManagerState extends State<ItemManager> {
   }
 
   _saveItem() async {
-    print(_item.amount);
-    if (_item.id == null)
-      await db.insertItem(_item);
-    else
-      await db.updateItem(_item);
-    setState(() {
-      _item = Item();
-      _ctrlItemDesc.clear();
-      _ctrlItemAmount.clear();
-    });
-    Navigator.of(context).pop(true);
+    try {
+      if (_item.id == null)
+        await db.insertItem(_item);
+      else
+        await db.updateItem(_item);
+      setState(() {
+        _item = Item();
+        _ctrlItemDesc.clear();
+        _ctrlItemAmount.clear();
+      });
+      Navigator.of(context).pop(true);
+    } catch (_) {
+      Fluttertoast.showToast(
+          msg: "Unable to ${_item.id == null ? 'insert' : 'update'} item");
+    }
   }
 }

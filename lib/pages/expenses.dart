@@ -16,7 +16,7 @@ class _ExpensesState extends State<Expenses> {
   List<Menu> _menuItems = [
     Menu(location: 'Expenses', view: ExpenseManagement(), isSelected: true),
     Menu(location: 'Items', view: ItemMangement()),
-    Menu(location: 'Item Type', view: ItemTypeMangement()),
+    Menu(location: 'Item Types', view: ItemTypeMangement()),
   ];
 
   @override

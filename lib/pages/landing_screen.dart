@@ -1,3 +1,4 @@
+import 'package:expense_management/pages/components/custom_card.dart';
 import 'package:expense_management/pages/expenses.dart';
 import 'package:flutter/material.dart';
 
@@ -21,18 +22,22 @@ class _LandingPageState extends State<LandingPage> {
               child: Text(
                 "Menus",
                 textAlign: TextAlign.center,
-                style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).accentColor),
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Theme.of(context).accentColor),
               ),
             ),
             ListTile(
-              leading: Icon(Icons.monetization_on_outlined),
+              leading: Icon(Icons.money_off_outlined),
               title: Text("Expenses"),
               onTap: () {
                 Navigator.of(context).pop();
                 Navigator.of(context).pushNamed(Expenses.route);
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.attach_money_outlined),
+              title: Text('Incomes'),
+              onTap: () {
+                Navigator.of(context).pop();
               },
             ),
             ListTile(
@@ -48,7 +53,7 @@ class _LandingPageState extends State<LandingPage> {
       appBar: AppBar(
         title: Text('Expense Management'),
       ),
-      body: Container(),
+      body: _buildBody(),
     );
   }
 
@@ -59,35 +64,44 @@ class _LandingPageState extends State<LandingPage> {
         mainAxisAlignment: MainAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          Card(
-              margin: EdgeInsets.all(5),
-              child: Container(
-                padding: EdgeInsets.all(5),
-                child: Row(
-                  children: [
-                    Expanded(child: Text('Total Expenses')),
-                    InkWell(
-                      child: Container(
-                        height: 100,
-                        width: 100,
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            color: Colors.grey,
-                            width: 1,
-                          ),
-                        ),
-                        alignment: Alignment.center,
-                        child: Text(
-                          'Manage Expenses',
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                    )
-                  ],
-                ),
-              ))
+          _expenseReport(),
+          _itemTypePercentage(),
         ],
       ),
     );
+  }
+
+  Widget _expenseReport() {
+    return CustomCard(title: "Current Month Expenses", child: Container(),);
+  }
+
+  Widget _itemTypePercentage() {
+    return CustomCard(title: "Expenses Percentage Per Type", child: Card(
+        margin: EdgeInsets.all(5),
+        child: Container(
+          padding: EdgeInsets.all(5),
+          child: Row(
+            children: [
+              Expanded(child: Text('Total Expenses')),
+              InkWell(
+                child: Container(
+                  height: 100,
+                  width: 100,
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: Colors.grey,
+                      width: 1,
+                    ),
+                  ),
+                  alignment: Alignment.center,
+                  child: Text(
+                    'Manage Expenses',
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              )
+            ],
+          ),
+        )),);
   }
 }

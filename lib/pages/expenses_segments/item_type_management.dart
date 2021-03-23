@@ -76,7 +76,10 @@ class _ItemTypeMangementState extends State<ItemTypeMangement> {
     if ((await showDeleteRecordManager(context, "Deleting",
             "Do you want to delete ${obj.description}?")) ??
         false) {
-      return (await db.deleteItemType(obj.id ?? 0)) > 0;
+      if ((await db.deleteItemType(obj.id ?? 0)) > 0) {
+        await _getItemTypes();
+        return true;
+      }
     }
     return false;
   }
