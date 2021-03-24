@@ -1,4 +1,4 @@
-import 'package:expense_management/models/item_type.dart';
+import 'package:expense_management/models/expenses/item_type.dart';
 import 'package:expense_management/models/model_base.dart';
 import 'package:json_annotation/json_annotation.dart';
 

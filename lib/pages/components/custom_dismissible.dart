@@ -52,7 +52,7 @@ class CustomDismissible extends StatelessWidget {
             color: Theme.of(context).cardColor,
             borderRadius: BorderRadius.only(topLeft: Radius.circular(isTop ? radius : 0), topRight: Radius.circular(isTop ? radius : 0), bottomLeft: Radius.circular(isBottom ? radius : 0), bottomRight: Radius.circular(isBottom ? radius : 0)),
           ),
-          margin: EdgeInsets.only(top: isTop ? 10 : 0, bottom: isBottom ? 10 : 0, left: 10, right: 10),
+          margin: EdgeInsets.only(top: isTop ? 5 : 0, bottom: isBottom ? 10 : 0, left: 10, right: 10),
           child: Column(
             children: [
               Dismissible(

@@ -1,7 +1,7 @@
 import 'package:expense_management/databases/main_db.dart';
 import 'package:expense_management/modals/delete_record.dart';
-import 'package:expense_management/modals/expense_manager.dart';
-import 'package:expense_management/models/expense.dart';
+import 'package:expense_management/modals/expenses/expense_manager.dart';
+import 'package:expense_management/models/expenses/expense.dart';
 import 'package:expense_management/pages/components/custom_dismissible.dart';
 import 'package:expense_management/pages/expenses_segments/expense_details_management.dart';
 import 'package:expense_management/pages/styles/style.dart';

@@ -1,7 +1,7 @@
+import 'package:expense_management/models/expenses/expense.dart';
+import 'package:expense_management/models/expenses/item.dart';
+import 'package:expense_management/models/model_base.dart';
 import 'package:json_annotation/json_annotation.dart';
-
-import './item.dart';
-import 'model_base.dart';
 
 part 'expense_details.g.dart';
 
@@ -17,6 +17,9 @@ class ExpenseDetails extends ModelBase {
 
   @JsonKey(ignore: true)
   Item? item;
+  
+  @JsonKey(ignore: true)
+  Expense? expense;
 
   @JsonKey(ignore: true)
   bool isHead = false;

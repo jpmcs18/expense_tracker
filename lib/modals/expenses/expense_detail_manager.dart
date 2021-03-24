@@ -1,8 +1,8 @@
 import 'package:expense_management/databases/main_db.dart';
 import 'package:expense_management/modals/modal_base.dart';
-import 'package:expense_management/models/expense_details.dart';
-import 'package:expense_management/models/item.dart';
 import 'package:expense_management/helpers/extensions/format_extension.dart';
+import 'package:expense_management/models/expenses/expense_details.dart';
+import 'package:expense_management/models/expenses/item.dart';
 import 'package:flutter/material.dart';
 
 Future<bool?> showExpenseDetailManager(context, expenseDetail) async {

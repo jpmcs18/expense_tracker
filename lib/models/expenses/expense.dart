@@ -1,6 +1,6 @@
+import 'package:expense_management/models/model_base.dart';
 import 'package:json_annotation/json_annotation.dart';
 
-import 'model_base.dart';
 
 part 'expense.g.dart';
 

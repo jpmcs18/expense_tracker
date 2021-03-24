@@ -31,7 +31,7 @@ class CustomCard extends StatelessWidget {
             Divider(
               thickness: 1,
             ),
-            child,
+            Container(padding: EdgeInsets.all(10), child: child),
           ],
         ),
       ),

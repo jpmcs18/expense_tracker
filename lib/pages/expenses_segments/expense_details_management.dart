@@ -1,8 +1,8 @@
 import 'package:expense_management/databases/main_db.dart';
 import 'package:expense_management/modals/delete_record.dart';
-import 'package:expense_management/modals/expense_detail_manager.dart';
-import 'package:expense_management/models/expense.dart';
-import 'package:expense_management/models/expense_details.dart';
+import 'package:expense_management/modals/expenses/expense_detail_manager.dart';
+import 'package:expense_management/models/expenses/expense.dart';
+import 'package:expense_management/models/expenses/expense_details.dart';
 import 'package:expense_management/pages/components/custom_dismissible.dart';
 import 'package:expense_management/pages/styles/style.dart';
 import 'package:flutter/material.dart';
@@ -101,7 +101,7 @@ class _ExpenseDetailsManagementState extends State<ExpenseDetailsManagement> {
   }
 
   _getExpenseDetails() async {
-    var ed = await db.getExpenseDetails(_expense.id ?? 0);
+    var ed = await db.getExpenseDetails(expenseId : _expense.id ?? 0);
     if (ed.length > 0) {
       setState(() {
         String _currentDate = "";

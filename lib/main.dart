@@ -1,3 +1,4 @@
+import 'package:expense_management/pages/bills.dart';
 import 'package:expense_management/pages/expenses.dart';
 import 'package:expense_management/pages/landing_screen.dart';
 import 'package:flutter/material.dart';
@@ -27,6 +28,8 @@ class MyApp extends StatelessWidget {
             return _buildRoute(setting, LandingPage());
           case Expenses.route:
             return _buildRoute(setting, Expenses());
+          case Bills.route:
+            return _buildRoute(setting, Bills());
           default:
             return _buildRoute(setting, LandingPage());
         }

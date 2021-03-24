@@ -1,6 +1,6 @@
 import 'package:expense_management/databases/main_db.dart';
 import 'package:expense_management/modals/modal_base.dart';
-import 'package:expense_management/models/expense.dart';
+import 'package:expense_management/models/expenses/expense.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
