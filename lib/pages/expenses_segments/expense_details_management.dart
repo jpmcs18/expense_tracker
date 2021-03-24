@@ -48,6 +48,8 @@ class _ExpenseDetailsManagementState extends State<ExpenseDetailsManagement> {
         itemBuilder: (context, index) {
           return CustomDismissible(
             header: _expensesDetails[index].date.format(dateOnly: true),
+            headerTailing: _getTotal(_expensesDetails[index].date),
+            headerTailingColor: Colors.red,
             isTop: _expensesDetails[index].isHead,
             isBottom: _expensesDetails[index].isBottom,
             id: _expensesDetails[index].id.toString(),
@@ -92,6 +94,10 @@ class _ExpenseDetailsManagementState extends State<ExpenseDetailsManagement> {
         },
       ),
     );
+  }
+ 
+ String _getTotal(DateTime date) {
+    return _expensesDetails.where((element) => element.date.format() == date.format()).fold(0, (num previousValue, element) => previousValue + element.totalPrice).format();
   }
 
   _getExpenseDetails() async {

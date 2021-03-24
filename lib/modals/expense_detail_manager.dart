@@ -106,10 +106,13 @@ class ExpenseDetailManagerState extends State<ExpenseDetailManager> {
           ),
         ),
         [
-          TextButton(onPressed: _cancel, child: Text('Cancel')),
-          TextButton(
-              onPressed: _saveExpenseDetail,
-              child: Text(_expenseDetail.id == null ? 'Insert' : 'Update'))
+          Expanded(child: TextButton(onPressed: _cancel, child: Text('Cancel'))),
+          VerticalDivider(thickness: 1.5, indent: 7, endIndent: 7,),
+          Expanded(
+            child: TextButton(
+                onPressed: _saveExpenseDetail,
+                child: Text(_expenseDetail.id == null ? 'Insert' : 'Update')),
+          )
         ],
         header: "Manage Expense Details");
   }

@@ -93,6 +93,7 @@ class MainDB {
           WHERE ${ItemHelper.colItemTypeId} = ${ItemTypeHelper.tblName}.${CreationHelper.colId}
         ) reference
       FROM ${ItemTypeHelper.tblName}
+      ORDER BY ${ItemTypeHelper.colDescription}
     ''');
     return res.length == 0
         ? []
@@ -151,6 +152,7 @@ class MainDB {
           WHERE ${ExpenseDetailsHelper.colItemId} = ${ItemHelper.tblName}.${CreationHelper.colId}
         ) reference
       FROM ${ItemHelper.tblName}
+      ORDER BY ${ItemHelper.colItemTypeId}, ${ItemHelper.colDescription} 
     ''');
     List<Item> itms = [];
     if (res.length > 0)
@@ -202,7 +204,7 @@ class MainDB {
   //EXPENSES MANAGEMENT
   Future<List<Expense>> getExpenses() async {
     Database d = (await db)!;
-    List<Map> res = await d.query(ExpenseHelper.tblName);
+    List<Map> res = await d.query(ExpenseHelper.tblName, orderBy: ExpenseHelper.colTitle);
     List<Expense> exps = [];
 
     if (res.length > 0)

@@ -40,12 +40,13 @@ class _ItemMangementState extends State<ItemMangement> {
         itemBuilder: (context, index) {
           return CustomDismissible(
             header: _items[index].itemType?.description ?? "",
+            headerTailing: _getTotal(_items[index].itemTypeId ?? 0),
+            headerTailingColor: Colors.green,
             isTop: _items[index].isHead,
             isBottom: _items[index].isBottom,
             id: _items[index].id.toString(),
             child: ListTile(
-                title: Text(_items[index].description ?? "",
-                    style: cardTitleStyle2),
+                title: Text(_items[index].description ?? "", style: cardTitleStyle2),
                 subtitle: Text(_items[index].createdOn.formatLocalize()),
                 trailing: Text(
                   _items[index].amount.format(),
@@ -65,6 +66,10 @@ class _ItemMangementState extends State<ItemMangement> {
         },
       ),
     );
+  }
+
+  String _getTotal(int itemTypeId) {
+    return _items.where((element) => element.itemTypeId == itemTypeId).fold(0, (num previousValue, element) => previousValue + element.amount).format();
   }
 
   _addNewItem() {
@@ -106,9 +111,7 @@ class _ItemMangementState extends State<ItemMangement> {
       Fluttertoast.showToast(msg: "Unable to delete ${obj.description}");
       return false;
     }
-    if ((await showDeleteRecordManager(
-            context, "Deleting", "Continue deleting '${obj.description}'?")) ??
-        false) {
+    if ((await showDeleteRecordManager(context, "Deleting", "Continue deleting '${obj.description}'?")) ?? false) {
       if ((await db.deleteItem(obj.id ?? 0)) > 0) {
         await _getItems();
         return true;
