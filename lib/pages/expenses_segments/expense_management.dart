@@ -31,7 +31,7 @@ class _ExpenseManagementState extends State<ExpenseManagement> {
       appBar: AppBar(
         title: Row(
           children: [
-            Expanded(child: Text('Expenses')),
+            Expanded(child: Text('Expense Categories')),
             IconButton(icon: Icon(Icons.add), onPressed: _newExpense)
           ],
         ),

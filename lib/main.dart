@@ -1,6 +1,9 @@
+import 'package:expense_management/models/reports/folder_arguments.dart';
 import 'package:expense_management/pages/bills.dart';
 import 'package:expense_management/pages/expenses.dart';
+import 'package:expense_management/pages/incomes.dart';
 import 'package:expense_management/pages/landing_screen.dart';
+import 'package:expense_management/pages/reports/folder_browser.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -30,6 +33,10 @@ class MyApp extends StatelessWidget {
             return _buildRoute(setting, Expenses());
           case Bills.route:
             return _buildRoute(setting, Bills());
+          case Incomes.route:
+            return _buildRoute(setting, Incomes());
+          case FolderBrowser.route:
+            return _buildRoute(setting, FolderBrowser(args: setting.arguments as FolderArguments));
           default:
             return _buildRoute(setting, LandingPage());
         }

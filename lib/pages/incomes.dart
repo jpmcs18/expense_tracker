@@ -1,26 +1,19 @@
 import 'package:expense_management/models/menu.dart';
-import 'package:expense_management/pages/bills_segments/electric_bill_management.dart';
-import 'package:expense_management/pages/bills_segments/electric_reading_management.dart';
-import 'package:expense_management/pages/bills_segments/person_management.dart';
-import 'package:expense_management/pages/bills_segments/water_bill_management.dart';
-import 'package:expense_management/pages/bills_segments/water_reading_management.dart';
+import 'package:expense_management/pages/incomes_segments/income_management.dart';
+import 'package:expense_management/pages/incomes_segments/income_type_management.dart';
 import 'package:flutter/material.dart';
 
-class Bills extends StatefulWidget {
-  static const String route = '/bills';
-
+class Incomes extends StatefulWidget {
+  static const String route = '/incomes';
   @override
-  _BillsState createState() => _BillsState();
+  _IncomesState createState() => _IncomesState();
 }
 
-class _BillsState extends State<Bills> {
+class _IncomesState extends State<Incomes> { 
   Widget? _selectedWidget = Container();
   List<Menu> _menuItems = [
-    Menu(location: 'Persons', view: PersonManagement(), isSelected: true),
-    Menu(location: 'Electric Bills', view: ElectricBillManagement()),
-    Menu(location: 'Electric Readings', view: ElectricReadingManagement()),
-    Menu(location: 'Water Bills', view: WaterBillManagement()),
-    Menu(location: 'Water Readings', view: WaterReadingManagement()),
+    Menu(location: 'Incomes', view: IncomeManagement(), isSelected: true),
+    Menu(location: 'Income Types', view: IncomeTypeManagement()),
   ];
 
   @override
@@ -30,19 +23,17 @@ class _BillsState extends State<Bills> {
       _selectedWidget = _menuItems[0].view;
     });
   }
-
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       primary: true,
       bottomNavigationBar: Container(
-        margin: EdgeInsets.all(0),
-        child: SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: _menuItems.map((menu) {
-              return InkWell(
+        margin: EdgeInsets.only(right: 10),
+        child: Row(
+          children: _menuItems.map((menu) {
+            return Expanded(
+              child: InkWell(
                 onTap: () {
                   _setAllFalse();
                   setState(() {
@@ -69,9 +60,9 @@ class _BillsState extends State<Bills> {
                     ),
                   ),
                 ),
-              );
-            }).toList(),
-          ),
+              ),
+            );
+          }).toList(),
         ),
       ),
       body: _selectedWidget,

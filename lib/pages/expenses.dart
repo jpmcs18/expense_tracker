@@ -15,8 +15,8 @@ class _ExpensesState extends State<Expenses> {
   Widget? _selectedWidget = Container();
   List<Menu> _menuItems = [
     Menu(location: 'Expenses', view: ExpenseManagement(), isSelected: true),
-    Menu(location: 'Items', view: ItemMangement()),
-    Menu(location: 'Item Types', view: ItemTypeMangement()),
+    Menu(location: 'Items', view: ItemManagement()),
+    Menu(location: 'Item Types', view: ItemTypeManagement()),
   ];
 
   @override
@@ -32,7 +32,7 @@ class _ExpensesState extends State<Expenses> {
     return Scaffold(
       primary: true,
       bottomNavigationBar: Container(
-        margin: EdgeInsets.all(0),
+        margin: EdgeInsets.only(right: 10),
         child: Row(
           children: _menuItems.map((menu) {
             return Expanded(
@@ -45,10 +45,12 @@ class _ExpensesState extends State<Expenses> {
                   });
                 },
                 child: Container(
+                  margin: EdgeInsets.only(left: 10, bottom: 10),
                   decoration: BoxDecoration(
                     color: (menu.isSelected ?? false)
                         ? Theme.of(context).buttonColor
                         : Colors.white,
+                    borderRadius: BorderRadius.circular(20)
                   ),
                   padding: EdgeInsets.all(15),
                   child: Text(

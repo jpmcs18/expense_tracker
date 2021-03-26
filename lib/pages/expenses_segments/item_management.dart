@@ -8,12 +8,12 @@ import 'package:flutter/material.dart';
 import 'package:expense_management/helpers/extensions/format_extension.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
-class ItemMangement extends StatefulWidget {
+class ItemManagement extends StatefulWidget {
   @override
-  _ItemMangementState createState() => _ItemMangementState();
+  ItemManagementState createState() => ItemManagementState();
 }
 
-class _ItemMangementState extends State<ItemMangement> {
+class ItemManagementState extends State<ItemManagement> {
   MainDB db = MainDB.instance;
   final List<Item> _items = [];
   Item _selectedItem = Item();

@@ -2,7 +2,7 @@ import 'package:intl/intl.dart';
 
 extension NumberFormatHelper on num {
   String format() {
-    return NumberFormat.currency(locale: "en_US", symbol: "₱").format(this);
+    return NumberFormat.currency(locale: "en_US", symbol: "PHP ").format(this);
   }
 }
 
@@ -15,6 +15,14 @@ extension DateFormatHelper on DateTime {
     DateTime first = DateTime(this.year, this.month, 1);
     DateTime last = DateTime(this.year, this.month + 1, 1).add(Duration(days: -1));
     return this.millisecondsSinceEpoch >= first.millisecondsSinceEpoch && this.millisecondsSinceEpoch <= last.millisecondsSinceEpoch;
+  }
+
+  DateTime previousMonth() {
+    return DateTime(this.year - (this.month == 1 ? 1 : 0), (this.month > 1 ? this.month - 1 : 12), this.day);
+  }
+
+  String formatToMonthYear() {
+    return DateFormat("MMMM yyyy").format(this);
   }
 
   String formatToMonth() {
