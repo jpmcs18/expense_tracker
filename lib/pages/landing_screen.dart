@@ -584,7 +584,7 @@ class _LandingPageState extends State<LandingPage> {
       child: Text(
         title,
         textAlign: TextAlign.center,
-        style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
+        style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
       ),
       decoration: BoxDecoration(color: Color(0xFFEEEEEE)),
       padding: EdgeInsets.only(top: 5, bottom: 5),
@@ -592,7 +592,7 @@ class _LandingPageState extends State<LandingPage> {
     );
   }
 
-  _buildTableChild(String title, {Alignment alignment = Alignment.centerLeft, double fontSize = 15, FontWeight fontWeight = FontWeight.normal, Color? color}) {
+  _buildTableChild(String title, {Alignment alignment = Alignment.centerLeft, double fontSize = 10, FontWeight fontWeight = FontWeight.normal, Color? color}) {
     return Container(
       padding: EdgeInsets.all(5),
       alignment: alignment,
@@ -608,7 +608,7 @@ class _LandingPageState extends State<LandingPage> {
       child: pw.Text(
         title,
         textAlign: pw.TextAlign.center,
-        style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 16),
+        style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 14),
       ),
       decoration: pw.BoxDecoration(color: PdfColor.fromInt(0xFFEEEEEE)),
       padding: pw.EdgeInsets.only(top: 5, bottom: 5),
@@ -616,7 +616,7 @@ class _LandingPageState extends State<LandingPage> {
     );
   }
 
-  _buildPDFTableChild(String title, {pw.Alignment alignment = pw.Alignment.centerLeft, double fontSize = 15, pw.FontWeight fontWeight = pw.FontWeight.normal, PdfColor? color}) {
+  _buildPDFTableChild(String title, {pw.Alignment alignment = pw.Alignment.centerLeft, double fontSize = 12, pw.FontWeight fontWeight = pw.FontWeight.normal, PdfColor? color}) {
     return pw.Container(
       padding: pw.EdgeInsets.all(5),
       alignment: alignment,
