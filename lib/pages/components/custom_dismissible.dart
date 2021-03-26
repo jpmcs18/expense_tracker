@@ -102,6 +102,7 @@ class CustomDismissible extends StatelessWidget {
                       thickness: 1,
                       indent: 20,
                       endIndent: 20,
+                      height: 0,
                     ),
             ],
           ),

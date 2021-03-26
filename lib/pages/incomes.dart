@@ -42,7 +42,7 @@ class _IncomesState extends State<Incomes> {
                   });
                 },
                 child: Container(
-                  margin: EdgeInsets.only(left: 10, bottom: 10),
+                  margin: EdgeInsets.only(left: 10, bottom: 10, top: 10),
                   decoration: BoxDecoration(
                     color: (menu.isSelected ?? false)
                         ? Theme.of(context).buttonColor
