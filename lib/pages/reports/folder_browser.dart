@@ -2,7 +2,9 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui';
 
+import 'package:expense_management/modals/reports/folder_manager.dart';
 import 'package:expense_management/models/reports/folder_arguments.dart';
+import 'package:expense_management/pages/components/custom_button.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -38,85 +40,130 @@ class FolderBrowserState extends State<FolderBrowser> {
       appBar: AppBar(
         title: Row(
           children: [
-            Expanded(child: Text('Select Folder'))
+            Expanded(child: Text('Select Folder')),
+            InkWell(
+              child: Icon(Icons.create_new_folder_outlined),
+              onTap: () {
+                _makeNewFolder(context);
+              },
+            )
           ],
         ),
       ),
-      body: Column(children: [
-        Container(
-          alignment: Alignment.centerLeft,
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              children: _selectedDir.map((e) {
-                var w = Container(
-                    child: Row(children: [
-                  Icon(Icons.arrow_right),
-                  InkWell(
-                    child: Container(
-                      child: Text(
-                        basename(e.path),
-                        style: TextStyle(color: (_cnt != _selectedDir.length - 1) ? Colors.black : Theme.of(context).primaryColor),
-                      ),
-                      margin: EdgeInsets.all(5),
+      body: Column(
+        children: [
+          Container(
+            alignment: Alignment.centerLeft,
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: _selectedDir.map((e) {
+                  var w = Container(
+                    child: Row(
+                      children: [
+                        Icon(Icons.arrow_right),
+                        InkWell(
+                          child: Container(
+                            child: Text(
+                              basename(e.path),
+                              style: TextStyle(color: (_cnt != _selectedDir.length - 1) ? Colors.black : Theme.of(context).primaryColor),
+                            ),
+                          ),
+                          onTap: () {
+                            _getFolder(e);
+                          },
+                        ),
+                      ],
                     ),
-                    onTap: () {
-                      _getFolder(e);
-                    },
-                  )
-                ]));
+                  );
 
-                setState(() {
-                  _cnt++;
-                });
+                  setState(() {
+                    _cnt++;
+                  });
 
-                return w;
-              }).toList(),
+                  return w;
+                }).toList(),
+              ),
             ),
           ),
-        ),
-        Expanded(
+          Expanded(
             child: ListView.builder(
-                itemCount: _folders.length,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    leading: Icon(Icons.folder),
-                    title: Container(
-                      child: Text(
-                        basename(_folders[index]?.path ?? ''),
+              itemCount: _folders.length,
+              itemBuilder: (context, index) {
+                bool isTop = index == 0;
+                bool isBottom = index == _folders.length - 1;
+                return Container(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).cardColor,
+                    borderRadius: BorderRadius.only(topLeft: Radius.circular(isTop ? 10 : 0), topRight: Radius.circular(isTop ? 10 : 0), bottomLeft: Radius.circular(isBottom ? 10 : 0), bottomRight: Radius.circular(isBottom ? 10 : 0)),
+                  ),
+                  margin: EdgeInsets.only(top: isTop ? 5 : 0, bottom: isBottom ? 10 : 0, left: 10, right: 10),
+                  child: Column(
+                    children: [
+                      ListTile(
+                        leading: Icon(Icons.folder),
+                        title: Text(
+                          basename(_folders[index]?.path ?? ''),
+                        ),
+                        onTap: () {
+                          _getFolder(_folders[index]);
+                        },
                       ),
-                      margin: EdgeInsets.all(5),
-                    ),
-                    onTap: () {
-                      _getFolder(_folders[index]);
-                    },
-                  );
-                })),
-        Card(
-          child: Container(
+                      isBottom
+                          ? SizedBox()
+                          : Divider(
+                              height: 0,
+                              thickness: 1,
+                              indent: 20,
+                              endIndent: 20,
+                            )
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
+          Container(
             margin: EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            padding: EdgeInsets.all(15),
             child: Row(
               children: [
                 Expanded(
-                    child: TextField(
-                  controller: _ctrlFileName,
-                  decoration: InputDecoration(labelText: 'File Name'),
-                )),
-                IconButton(
-                    icon: Icon(Icons.save),
-                    onPressed: () {
-                      _saveQRCode(context);
-                    })
+                  child: TextField(
+                    controller: _ctrlFileName,
+                    decoration: InputDecoration(labelText: 'File Name'),
+                  ),
+                ),
+                SizedBox(
+                  width: 10.0,
+                ),
+                Container(
+                  child: CustomButton(
+                    title: 'Save',
+                    icon: Icons.save_outlined,
+                    onTap: () {
+                      _save(context);
+                    },
+                  ),
+                )
               ],
             ),
           ),
-        )
-      ]),
+        ],
+      ),
     );
   }
 
   _initializeFolders() async {
     _getFolder(Directory('/storage/emulated/0'));
+  }
+
+  _makeNewFolder(BuildContext context) async {
+    if ((await showFolderManager(context, _directory?.path ?? '')) ?? false) _getFolder(_directory);
   }
 
   _getFolder(Directory? directory) async {
@@ -156,7 +203,7 @@ class FolderBrowserState extends State<FolderBrowser> {
     }
   }
 
-  _saveQRCode(context) async {
+  _save(context) async {
     var path = join(_directory?.path ?? '', '${_ctrlFileName.text}.${widget.args.ext}');
 
     final file = await new File(path).create();
