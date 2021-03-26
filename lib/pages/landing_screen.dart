@@ -300,6 +300,7 @@ class _LandingPageState extends State<LandingPage> {
 
   Widget _balanceReport() {
     return CustomCard(
+      isCollapsed: true,
       isCollapsible: true,
       title: "Incomes & Expenses Summary",
       child: Table(children: [
@@ -327,6 +328,7 @@ class _LandingPageState extends State<LandingPage> {
 
   Widget _expenseReport() {
     return CustomCard(
+      isCollapsed: true,
       isCollapsible: true,
       title: "Current Month Expenses Breakdown",
       child: Column(
@@ -388,7 +390,6 @@ class _LandingPageState extends State<LandingPage> {
 
   Widget _billsReport() {
     return CustomCard(
-        isCollapsible: true,
         title: "Monthly Bill Report",
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,

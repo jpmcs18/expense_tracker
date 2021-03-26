@@ -5,8 +5,9 @@ class CustomCard extends StatefulWidget {
   final String title;
   final Widget child;
   final bool isCollapsible;
+  final bool isCollapsed;
 
-  const CustomCard({required this.title, required this.child, this.isCollapsible = false});
+  const CustomCard({required this.title, required this.child, this.isCollapsible = false, this.isCollapsed = false});
 
   @override
   _CustomCardState createState() => _CustomCardState();
@@ -15,6 +16,14 @@ class CustomCard extends StatefulWidget {
 class _CustomCardState extends State<CustomCard> {
   final double radius = 10;
   bool collapse = false;
+
+  @override
+  void initState() {
+    super.initState();
+    setState(() {
+      collapse = widget.isCollapsed;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
