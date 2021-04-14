@@ -1,7 +1,8 @@
 import 'package:expense_management/pages/styles/style.dart';
 import 'package:flutter/material.dart';
 
-Widget generateModalBody(Widget body, List<Widget> footer, {Widget? headWidget, String? header}) {
+Widget generateModalBody(Widget body, List<Widget> footer,
+    {Widget? headWidget, String? header}) {
   return SafeArea(
     child: SingleChildScrollView(
       child: Container(
@@ -25,7 +26,8 @@ Widget generateModalBody(Widget body, List<Widget> footer, {Widget? headWidget, 
               ),
               alignment: Alignment.center,
             ),
-            Container(margin: EdgeInsets.only(left: 20, right: 20), child: body),
+            Container(
+                margin: EdgeInsets.only(left: 20, right: 20), child: body),
             SizedBox(
               height: 20,
             ),

@@ -20,13 +20,10 @@ class CustomButton extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             ...(icon == null
-                ? [
-                    SizedBox()
-                  ]
+                ? [SizedBox()]
                 : [
                     Icon(
                       icon!,
-                      color: Theme.of(context).accentColor,
                     ),
                     SizedBox(
                       width: 5.0,
@@ -34,7 +31,6 @@ class CustomButton extends StatelessWidget {
                   ]),
             Text(
               title,
-              style: TextStyle(color: Theme.of(context).accentColor),
             ),
           ],
         ),

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:expense_management/modals/modal_base.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:expense_management/helpers/extensions/format_extension.dart';
+import 'package:month_picker_dialog/month_picker_dialog.dart';
 
 Future<bool?> showWaterBillManager(context, waterBill) async {
   return await showModalBottomSheet<bool?>(
@@ -41,7 +42,7 @@ class WaterBillManagerState extends State<WaterBillManager> {
     super.initState();
     setState(() {
       _waterBill = widget.waterBill;
-      _ctrlDate.text = _waterBill.date.format(dateOnly: true);
+      _ctrlDate.text = _waterBill.date.formatToMonthYear();
       _ctrlAmount.text = _waterBill.amount.toString();
     });
   }
@@ -75,27 +76,37 @@ class WaterBillManagerState extends State<WaterBillManager> {
           ),
         ),
         [
-          Expanded(child: TextButton(onPressed: _cancel, child: Text('Cancel'))),
+          Expanded(
+              child: TextButton(onPressed: _cancel, child: Text('Cancel'))),
           VerticalDivider(
             thickness: 1.5,
             indent: 7,
             endIndent: 7,
           ),
           Expanded(
-            child: TextButton(onPressed: _saveWaterBill, child: Text(_waterBill.id == null ? 'Insert' : 'Update')),
+            child: TextButton(
+                onPressed: _saveWaterBill,
+                child: Text(_waterBill.id == null ? 'Insert' : 'Update')),
           )
         ],
         header: "Manage Water Bill");
   }
 
   _getDate() async {
-    var date = await showDatePicker(context: context, initialDate: _waterBill.date, firstDate: _firstDate, lastDate: _lastDate);
-    if (date != null) {
-      setState(() {
-        _waterBill.date = date;
-        _ctrlDate.text = _waterBill.date.format(dateOnly: true);
-      });
-    }
+    showMonthPicker(
+      context: context,
+      firstDate: _firstDate,
+      lastDate: _lastDate,
+      initialDate: _waterBill.date,
+      locale: Locale("en"),
+    ).then((date) async {
+      if (date != null) {
+        setState(() {
+          _waterBill.date = date;
+          _ctrlDate.text = _waterBill.date.formatToMonthYear();
+        });
+      }
+    });
   }
 
   _cancel() {
@@ -120,7 +131,9 @@ class WaterBillManagerState extends State<WaterBillManager> {
       });
       Navigator.of(context).pop(true);
     } catch (_) {
-      Fluttertoast.showToast(msg: "Unable to ${_waterBill.id == null ? 'insert' : 'update'} water bill");
+      Fluttertoast.showToast(
+          msg:
+              "Unable to ${_waterBill.id == null ? 'insert' : 'update'} water bill");
     }
   }
 }

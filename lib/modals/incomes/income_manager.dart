@@ -86,13 +86,17 @@ class IncomeManagerState extends State<IncomeManager> {
           ),
         ),
         [
-          Expanded(child: TextButton(onPressed: _cancel, child: Text('Cancel'))),
+          Expanded(
+              child: TextButton(onPressed: _cancel, child: Text('Cancel'))),
           VerticalDivider(
             thickness: 1.5,
             indent: 7,
             endIndent: 7,
           ),
-          Expanded(child: TextButton(onPressed: _saveIncome, child: Text(_income.id == null ? 'Insert' : 'Update')))
+          Expanded(
+              child: TextButton(
+                  onPressed: _saveIncome,
+                  child: Text(_income.id == null ? 'Insert' : 'Update')))
         ],
         header: "Manage Income");
   }
@@ -103,7 +107,11 @@ class IncomeManagerState extends State<IncomeManager> {
   }
 
   _getDate() async {
-    var date = await showDatePicker(context: context, initialDate: _income.date, firstDate: _firstDate, lastDate: _lastDate);
+    var date = await showDatePicker(
+        context: context,
+        initialDate: _income.date,
+        firstDate: _firstDate,
+        lastDate: _lastDate);
     if (date != null) {
       setState(() {
         _income.date = date;
@@ -115,7 +123,8 @@ class IncomeManagerState extends State<IncomeManager> {
   _selectIncomeType(int? incomeTypeId) {
     setState(() {
       _income.incomeTypeId = incomeTypeId;
-      _income.incomeType = _incomeTypes.where((element) => element.id == incomeTypeId).first;
+      _income.incomeType =
+          _incomeTypes.where((element) => element.id == incomeTypeId).first;
     });
   }
 
@@ -168,7 +177,8 @@ class IncomeManagerState extends State<IncomeManager> {
       });
       Navigator.of(context).pop(true);
     } catch (_) {
-      Fluttertoast.showToast(msg: "Unable to ${_income.id == null ? 'insert' : 'update'} Income");
+      Fluttertoast.showToast(
+          msg: "Unable to ${_income.id == null ? 'insert' : 'update'} Income");
     }
   }
 }

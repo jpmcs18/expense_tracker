@@ -54,8 +54,13 @@ class PersonManagerState extends State<PersonManager> {
           },
         ),
         [
-          Expanded(child: TextButton(onPressed: _cancel, child: Text('Cancel'))),
-          VerticalDivider(thickness: 1.5, indent: 7, endIndent: 7,),
+          Expanded(
+              child: TextButton(onPressed: _cancel, child: Text('Cancel'))),
+          VerticalDivider(
+            thickness: 1.5,
+            indent: 7,
+            endIndent: 7,
+          ),
           Expanded(
             child: TextButton(
                 onPressed: _savePerson,
@@ -86,8 +91,7 @@ class PersonManagerState extends State<PersonManager> {
       Navigator.of(context).pop(true);
     } catch (_) {
       Fluttertoast.showToast(
-          msg:
-              "Unable to ${_person.id == null ? 'insert' : 'update'} person");
+          msg: "Unable to ${_person.id == null ? 'insert' : 'update'} person");
     }
   }
 }

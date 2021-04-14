@@ -45,7 +45,8 @@ class IncomeManagementState extends State<IncomeManagement> {
             isBottom: _incomes[index].isBottom,
             id: _incomes[index].id.toString(),
             child: ListTile(
-                title: Text(_incomes[index].date.format(dateOnly: true), style: cardTitleStyle2),
+                title: Text(_incomes[index].date.format(dateOnly: true),
+                    style: cardTitleStyle2),
                 subtitle: Text(_incomes[index].createdOn.formatLocalize()),
                 trailing: Text(
                   _incomes[index].amount.format(),
@@ -68,7 +69,10 @@ class IncomeManagementState extends State<IncomeManagement> {
   }
 
   String _getTotal(int incomeTypeId) {
-    return _incomes.where((element) => element.incomeTypeId == incomeTypeId).fold(0, (num previousValue, element) => previousValue + element.amount).format();
+    return _incomes
+        .where((element) => element.incomeTypeId == incomeTypeId)
+        .fold(0, (num previousValue, element) => previousValue + element.amount)
+        .format();
   }
 
   _addNewIncome() {
@@ -79,7 +83,8 @@ class IncomeManagementState extends State<IncomeManagement> {
   }
 
   _manageIncome() async {
-    if ((await showIncomeManager(context, _selectedIncome)) ?? false) _getIncomes();
+    if ((await showIncomeManager(context, _selectedIncome)) ?? false)
+      _getIncomes();
   }
 
   _getIncomes() async {
@@ -102,16 +107,17 @@ class IncomeManagementState extends State<IncomeManagement> {
         }
         _incomes.last.isBottom = true;
       });
-    }
-    else {
+    } else {
       setState(() {
         _incomes.clear();
-            });
+      });
     }
   }
 
   Future<bool?> _deleteIncomes(Income obj) async {
-    if ((await showDeleteRecordManager(context, "Deleting", "Do you want to delete income for ${obj.date.format(dateOnly: true)}?")) ?? false) {
+    if ((await showDeleteRecordManager(context, "Deleting",
+            "Do you want to delete income for ${obj.date.format(dateOnly: true)}?")) ??
+        false) {
       if ((await db.deleteIncome(obj.id ?? 0)) > 0) {
         await _getIncomes();
         return true;

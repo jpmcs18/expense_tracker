@@ -46,7 +46,9 @@ class IncomeTypeManagementState extends State<IncomeTypeManagement> {
                 title: Container(
                     child: Row(
                   children: [
-                    Expanded(child: Text(_incomeTypes[index].description ?? "", style: cardTitleStyle2))
+                    Expanded(
+                        child: Text(_incomeTypes[index].description ?? "",
+                            style: cardTitleStyle2))
                   ],
                 )),
                 subtitle: Text(_incomeTypes[index].createdOn.formatLocalize()),
@@ -71,7 +73,9 @@ class IncomeTypeManagementState extends State<IncomeTypeManagement> {
       Fluttertoast.showToast(msg: "Unable to delete ${obj.description}");
       return false;
     }
-    if ((await showDeleteRecordManager(context, "Deleting", "Do you want to delete ${obj.description}?")) ?? false) {
+    if ((await showDeleteRecordManager(context, "Deleting",
+            "Do you want to delete ${obj.description}?")) ??
+        false) {
       if ((await db.deleteIncomeType(obj.id ?? 0)) > 0) {
         await _getIncomeTypes();
         return true;
@@ -88,7 +92,8 @@ class IncomeTypeManagementState extends State<IncomeTypeManagement> {
   }
 
   _manageIncomeType() async {
-    if ((await showIncomeTypeManager(context, _selectedIncomeType)) ?? false) _getIncomeTypes();
+    if ((await showIncomeTypeManager(context, _selectedIncomeType)) ?? false)
+      _getIncomeTypes();
   }
 
   _getIncomeTypes() async {

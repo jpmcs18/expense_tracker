@@ -1,7 +1,6 @@
 import 'package:expense_management/models/model_base.dart';
 import 'package:json_annotation/json_annotation.dart';
 
-
 part 'expense.g.dart';
 
 @JsonSerializable()

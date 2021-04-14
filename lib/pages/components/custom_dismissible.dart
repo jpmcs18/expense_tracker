@@ -12,7 +12,17 @@ class CustomDismissible extends StatelessWidget {
   final bool isTop;
   final bool isBottom;
   final bool isNormal;
-  const CustomDismissible({required this.id, required this.child, required this.onDelete, required this.onEdit, this.isTop = false, this.isBottom = false, this.isNormal = false, this.header, this.headerTailing, this.headerTailingColor});
+  const CustomDismissible(
+      {required this.id,
+      required this.child,
+      required this.onDelete,
+      required this.onEdit,
+      this.isTop = false,
+      this.isBottom = false,
+      this.isNormal = false,
+      this.header,
+      this.headerTailing,
+      this.headerTailingColor});
 
   final double radius = 15;
   @override
@@ -37,7 +47,10 @@ class CustomDismissible extends StatelessWidget {
                       ? Container(
                           child: Text(
                             headerTailing!,
-                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17, color: headerTailingColor),
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 17,
+                                color: headerTailingColor),
                           ),
                           alignment: Alignment.centerRight,
                           margin: EdgeInsets.only(top: 10),
@@ -50,17 +63,28 @@ class CustomDismissible extends StatelessWidget {
         Container(
           decoration: BoxDecoration(
             color: Theme.of(context).cardColor,
-            borderRadius: BorderRadius.only(topLeft: Radius.circular(isTop ? radius : 0), topRight: Radius.circular(isTop ? radius : 0), bottomLeft: Radius.circular(isBottom ? radius : 0), bottomRight: Radius.circular(isBottom ? radius : 0)),
+            borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(isTop ? radius : 0),
+                topRight: Radius.circular(isTop ? radius : 0),
+                bottomLeft: Radius.circular(isBottom ? radius : 0),
+                bottomRight: Radius.circular(isBottom ? radius : 0)),
           ),
-          margin: EdgeInsets.only(top: isTop ? 5 : 0, bottom: isBottom ? 10 : 0, left: 10, right: 10),
+          margin: EdgeInsets.only(
+              top: isTop ? 5 : 0, bottom: isBottom ? 5 : 0, left: 5, right: 5),
           child: Column(
             children: [
               Dismissible(
                 key: Key(id),
-                child: Container(decoration: BoxDecoration(color: Colors.transparent), child: child),
+                child: Container(
+                    decoration: BoxDecoration(color: Colors.transparent),
+                    child: child),
                 background: Container(
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.only(topLeft: Radius.circular(isTop ? radius : 0), topRight: Radius.circular(isTop ? radius : 0), bottomLeft: Radius.circular(isBottom ? radius : 0), bottomRight: Radius.circular(isBottom ? radius : 0)),
+                      borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(isTop ? radius : 0),
+                          topRight: Radius.circular(isTop ? radius : 0),
+                          bottomLeft: Radius.circular(isBottom ? radius : 0),
+                          bottomRight: Radius.circular(isBottom ? radius : 0)),
                       color: Colors.green,
                     ),
                     padding: EdgeInsets.zero,
@@ -74,7 +98,11 @@ class CustomDismissible extends StatelessWidget {
                     )),
                 secondaryBackground: Container(
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.only(topLeft: Radius.circular(isTop ? radius : 0), topRight: Radius.circular(isTop ? radius : 0), bottomLeft: Radius.circular(isBottom ? radius : 0), bottomRight: Radius.circular(isBottom ? radius : 0)),
+                      borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(isTop ? radius : 0),
+                          topRight: Radius.circular(isTop ? radius : 0),
+                          bottomLeft: Radius.circular(isBottom ? radius : 0),
+                          bottomRight: Radius.circular(isBottom ? radius : 0)),
                       color: Colors.red,
                     ),
                     padding: EdgeInsets.zero,

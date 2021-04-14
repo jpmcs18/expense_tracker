@@ -21,5 +21,10 @@ class BillReport {
     return electricBillAmount + waterBillAmount;
   }
 
-  BillReport({this.person, this.previousMonthWaterReading, this.previousMonthElectricReading, this.waterReading, this.electricReading});
+  BillReport(
+      {this.person,
+      this.previousMonthWaterReading,
+      this.previousMonthElectricReading,
+      this.waterReading,
+      this.electricReading});
 }

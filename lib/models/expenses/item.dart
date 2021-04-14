@@ -1,11 +1,12 @@
 import 'package:expense_management/models/expenses/item_type.dart';
 import 'package:expense_management/models/model_base.dart';
+import 'package:expense_management/models/titled_model_mixin.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'item.g.dart';
 
 @JsonSerializable()
-class Item extends ModelBase {
+class Item extends ModelBase with TitledModelMixin {
   String? description;
   @JsonKey(name: 'item_type_id')
   int? itemTypeId;
@@ -16,12 +17,6 @@ class Item extends ModelBase {
 
   @JsonKey(ignore: true)
   ItemType? itemType;
-
-  @JsonKey(ignore: true)
-  bool isHead = false;
-
-  @JsonKey(ignore: true)
-  bool isBottom = false;
 
   Item({this.itemTypeId, this.description});
 

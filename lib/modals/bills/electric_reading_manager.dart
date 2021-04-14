@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:expense_management/modals/modal_base.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:expense_management/helpers/extensions/format_extension.dart';
+import 'package:month_picker_dialog/month_picker_dialog.dart';
 
 Future<bool?> showElectricReadingManager(context, electricReading) async {
   return await showModalBottomSheet<bool?>(
@@ -44,7 +45,7 @@ class ElectricReadingManagerState extends State<ElectricReadingManager> {
     super.initState();
     setState(() {
       _electricReading = widget.electricReading;
-      _ctrlDate.text = _electricReading.date.format(dateOnly: true);
+      _ctrlDate.text = _electricReading.date.formatToMonthYear();
       _ctrlReading.text = _electricReading.reading.toString();
     });
     _initStateAsync();
@@ -86,14 +87,17 @@ class ElectricReadingManagerState extends State<ElectricReadingManager> {
           ),
         ),
         [
-          Expanded(child: TextButton(onPressed: _cancel, child: Text('Cancel'))),
+          Expanded(
+              child: TextButton(onPressed: _cancel, child: Text('Cancel'))),
           VerticalDivider(
             thickness: 1.5,
             indent: 7,
             endIndent: 7,
           ),
           Expanded(
-            child: TextButton(onPressed: _saveElectricReading, child: Text(_electricReading.id == null ? 'Insert' : 'Update')),
+            child: TextButton(
+                onPressed: _saveElectricReading,
+                child: Text(_electricReading.id == null ? 'Insert' : 'Update')),
           )
         ],
         header: "Manage Electric Reading");
@@ -108,13 +112,20 @@ class ElectricReadingManagerState extends State<ElectricReadingManager> {
   }
 
   _getDate() async {
-    var date = await showDatePicker(context: context, initialDate: _electricReading.date, firstDate: _firstDate, lastDate: _lastDate);
-    if (date != null) {
-      setState(() {
-        _electricReading.date = date;
-        _ctrlDate.text = _electricReading.date.format(dateOnly: true);
-      });
-    }
+    showMonthPicker(
+      context: context,
+      firstDate: _firstDate,
+      lastDate: _lastDate,
+      initialDate: _electricReading.date,
+      locale: Locale("en"),
+    ).then((date) async {
+      if (date != null) {
+        setState(() {
+          _electricReading.date = date;
+          _ctrlDate.text = _electricReading.date.formatToMonthYear();
+        });
+      }
+    });
   }
 
   _initStateAsync() async {
@@ -167,7 +178,9 @@ class ElectricReadingManagerState extends State<ElectricReadingManager> {
       });
       Navigator.of(context).pop(true);
     } catch (_) {
-      Fluttertoast.showToast(msg: "Unable to ${_electricReading.id == null ? 'insert' : 'update'} electric reading");
+      Fluttertoast.showToast(
+          msg:
+              "Unable to ${_electricReading.id == null ? 'insert' : 'update'} electric reading");
     }
   }
 }

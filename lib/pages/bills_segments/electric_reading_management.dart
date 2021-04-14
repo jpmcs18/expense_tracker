@@ -9,7 +9,8 @@ import 'package:expense_management/helpers/extensions/format_extension.dart';
 
 class ElectricReadingManagement extends StatefulWidget {
   @override
-  ElectricReadingManagementState createState() => ElectricReadingManagementState();
+  ElectricReadingManagementState createState() =>
+      ElectricReadingManagementState();
 }
 
 class ElectricReadingManagementState extends State<ElectricReadingManagement> {
@@ -30,7 +31,8 @@ class ElectricReadingManagementState extends State<ElectricReadingManagement> {
         title: Row(
           children: [
             Expanded(child: Text('Electric Readings')),
-            IconButton(icon: Icon(Icons.add), onPressed: _addNewElectricReading),
+            IconButton(
+                icon: Icon(Icons.add), onPressed: _addNewElectricReading),
           ],
         ),
       ),
@@ -46,17 +48,22 @@ class ElectricReadingManagementState extends State<ElectricReadingManagement> {
                 title: Container(
                     child: Row(
                   children: [
-                    Expanded(child: Text(_electricReading[index].date.format(dateOnly: true), style: cardTitleStyle2))
+                    Expanded(
+                        child: Text(
+                            _electricReading[index].date.formatToMonthYear(),
+                            style: cardTitleStyle2))
                   ],
                 )),
-                subtitle: Text(_electricReading[index].createdOn.formatLocalize()),
+                subtitle:
+                    Text(_electricReading[index].createdOn.formatLocalize()),
                 trailing: Text(
                   _electricReading[index].reading.toString(),
                   style: TextStyle(fontSize: 15),
                 ),
               ),
               onDelete: () async {
-                return await _deleteElectricReading(_electricReading[index]) ?? false;
+                return await _deleteElectricReading(_electricReading[index]) ??
+                    false;
               },
               onEdit: () async {
                 setState(() {
@@ -71,7 +78,9 @@ class ElectricReadingManagementState extends State<ElectricReadingManagement> {
   }
 
   Future<bool?> _deleteElectricReading(ElectricReading obj) async {
-    if ((await showDeleteRecordManager(context, "Deleting", "Do you want to delete reading for ${obj.date.format(dateOnly: true)}?")) ?? false) {
+    if ((await showDeleteRecordManager(context, "Deleting",
+            "Do you want to delete reading for ${obj.date.formatToMonthYear()}?")) ??
+        false) {
       if ((await db.deleteElectricReading(obj.id ?? 0)) > 0) {
         await _getElectricReadings();
         return true;
@@ -88,7 +97,8 @@ class ElectricReadingManagementState extends State<ElectricReadingManagement> {
   }
 
   _manageElectricReading() async {
-    if ((await showElectricReadingManager(context, _selectedElectricReading)) ?? false) _getElectricReadings();
+    if ((await showElectricReadingManager(context, _selectedElectricReading)) ??
+        false) _getElectricReadings();
   }
 
   _getElectricReadings() async {
@@ -110,9 +120,8 @@ class ElectricReadingManagementState extends State<ElectricReadingManagement> {
             _electricReading.add(e);
           }
           _electricReading.last.isBottom = true;
-        }
-        else{
-        _electricReading.clear();
+        } else {
+          _electricReading.clear();
         }
       });
     }

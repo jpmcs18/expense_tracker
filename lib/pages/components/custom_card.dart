@@ -7,7 +7,11 @@ class CustomCard extends StatefulWidget {
   final bool isCollapsible;
   final bool isCollapsed;
 
-  const CustomCard({required this.title, required this.child, this.isCollapsible = false, this.isCollapsed = false});
+  const CustomCard(
+      {required this.title,
+      required this.child,
+      this.isCollapsible = false,
+      this.isCollapsed = false});
 
   @override
   _CustomCardState createState() => _CustomCardState();
@@ -29,7 +33,9 @@ class _CustomCardState extends State<CustomCard> {
   Widget build(BuildContext context) {
     return Container(
       margin: EdgeInsets.all(10),
-      decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(radius)), color: Theme.of(context).cardColor),
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.all(Radius.circular(radius)),
+          color: Theme.of(context).cardColor),
       child: ConstrainedBox(
         constraints: new BoxConstraints(
           minHeight: collapse ? 0 : 100,
@@ -41,7 +47,8 @@ class _CustomCardState extends State<CustomCard> {
           children: [
             InkWell(
               child: Container(
-                margin: EdgeInsets.only(top: 12, left: 15, right: 15, bottom: 12),
+                margin:
+                    EdgeInsets.only(top: 12, left: 15, right: 15, bottom: 12),
                 child: Text(
                   widget.title,
                   style: cardTitleStyle3,

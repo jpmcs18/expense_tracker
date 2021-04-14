@@ -8,7 +8,7 @@ class IncomeType extends ModelBase {
   String? description;
   @JsonKey(ignore: true)
   int reference = 0;
-  
+
   IncomeType({this.description});
 
   factory IncomeType.fromJson(Map<String, dynamic> json) =>

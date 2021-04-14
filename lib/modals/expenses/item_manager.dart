@@ -84,9 +84,17 @@ class ItemManagerState extends State<ItemManager> {
           ),
         ),
         [
-          Expanded(child: TextButton(onPressed: _cancel, child: Text('Cancel'))),
-          VerticalDivider(thickness: 1.5, indent: 7, endIndent: 7,),
-          Expanded(child: TextButton(onPressed: _saveItem, child: Text(_item.id == null ? 'Insert' : 'Update')))
+          Expanded(
+              child: TextButton(onPressed: _cancel, child: Text('Cancel'))),
+          VerticalDivider(
+            thickness: 1.5,
+            indent: 7,
+            endIndent: 7,
+          ),
+          Expanded(
+              child: TextButton(
+                  onPressed: _saveItem,
+                  child: Text(_item.id == null ? 'Insert' : 'Update')))
         ],
         header: "Manage Item");
   }

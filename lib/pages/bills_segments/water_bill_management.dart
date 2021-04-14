@@ -38,21 +38,32 @@ class WaterBillManagementState extends State<WaterBillManagement> {
         itemCount: _waterBill.length,
         itemBuilder: (context, index) {
           return CustomDismissible(
-              isTop: index == 0,
-              isBottom: index == _waterBill.length - 1,
+              isTop: _waterBill[index].isHead,
+              isBottom: _waterBill[index].isBottom,
+              header: _waterBill[index].date.year.toString(),
+              headerTailing: _waterBill[index].isHead
+                  ? _waterBill
+                      .where((element) =>
+                          element.date.year == _waterBill[index].date.year)
+                      .fold<num>(0.0, (previousValue, element) {
+                      return previousValue + element.amount;
+                    }).format()
+                  : '',
               id: _waterBill[index].id.toString(),
               child: ListTile(
                 title: Container(
                     child: Row(
                   children: [
-                    Expanded(child: Text(_waterBill[index].date.format(dateOnly: true), style: cardTitleStyle2))
+                    Expanded(
+                        child: Text(_waterBill[index].date.formatToMonthYear(),
+                            style: cardTitleStyle2))
                   ],
                 )),
                 subtitle: Text(_waterBill[index].createdOn.formatLocalize()),
                 trailing: Text(
-                      _waterBill[index].amount.format(),
-                      style: TextStyle(fontSize: 15, color: Colors.red),
-                    ),
+                  _waterBill[index].amount.format(),
+                  style: TextStyle(fontSize: 15, color: Colors.red),
+                ),
               ),
               onDelete: () async {
                 return await _deleteWaterBill(_waterBill[index]) ?? false;
@@ -70,7 +81,9 @@ class WaterBillManagementState extends State<WaterBillManagement> {
   }
 
   Future<bool?> _deleteWaterBill(WaterBill obj) async {
-    if ((await showDeleteRecordManager(context, "Deleting", "Do you want to delete bill for ${obj.date.format(dateOnly: true)}?")) ?? false) {
+    if ((await showDeleteRecordManager(context, "Deleting",
+            "Do you want to delete bill for ${obj.date.formatToMonthYear()}?")) ??
+        false) {
       if ((await db.deleteWaterBill(obj.id ?? 0)) > 0) {
         await _getWaterBills();
         return true;
@@ -87,14 +100,32 @@ class WaterBillManagementState extends State<WaterBillManagement> {
   }
 
   _manageWaterBill() async {
-    if ((await showWaterBillManager(context, _selectedWaterBill)) ?? false) _getWaterBills();
+    if ((await showWaterBillManager(context, _selectedWaterBill)) ?? false)
+      _getWaterBills();
   }
 
   _getWaterBills() async {
     var waterBills = await db.getWaterBills();
     if (this.mounted) {
       setState(() {
-        _waterBill = waterBills;
+        int _current = 0;
+        _waterBill.clear();
+        if (waterBills.length > 0) {
+          for (int i = 0; i < waterBills.length; i++) {
+            var e = waterBills[i];
+            if (_current == 0 || _current != e.date.year) {
+              _current = e.date.year;
+              e.isHead = true;
+              if (i != 0) {
+                waterBills[i - 1].isBottom = true;
+              }
+            }
+            _waterBill.add(e);
+          }
+          _waterBill.last.isBottom = true;
+        } else {
+          _waterBill.clear();
+        }
       });
     }
   }

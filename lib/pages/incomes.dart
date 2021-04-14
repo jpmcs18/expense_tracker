@@ -9,7 +9,7 @@ class Incomes extends StatefulWidget {
   _IncomesState createState() => _IncomesState();
 }
 
-class _IncomesState extends State<Incomes> { 
+class _IncomesState extends State<Incomes> {
   Widget? _selectedWidget = Container();
   List<Menu> _menuItems = [
     Menu(location: 'Incomes', view: IncomeManagement(), isSelected: true),
@@ -23,7 +23,7 @@ class _IncomesState extends State<Incomes> {
       _selectedWidget = _menuItems[0].view;
     });
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,20 +44,14 @@ class _IncomesState extends State<Incomes> {
                 child: Container(
                   margin: EdgeInsets.only(left: 10, bottom: 10, top: 10),
                   decoration: BoxDecoration(
-                    color: (menu.isSelected ?? false)
-                        ? Theme.of(context).buttonColor
-                        : Colors.white,
-                    borderRadius: BorderRadius.circular(20)
-                  ),
+                      color: (menu.isSelected ?? false)
+                          ? Theme.of(context).buttonColor
+                          : Colors.white,
+                      borderRadius: BorderRadius.circular(20)),
                   padding: EdgeInsets.all(15),
                   child: Text(
                     menu.location ?? "",
                     textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: (menu.isSelected ?? false)
-                          ? Theme.of(context).accentColor
-                          : Colors.black,
-                    ),
                   ),
                 ),
               ),

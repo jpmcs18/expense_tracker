@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:expense_management/modals/modal_base.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:expense_management/helpers/extensions/format_extension.dart';
+import 'package:month_picker_dialog/month_picker_dialog.dart';
 
 Future<bool?> showElectricBillManager(context, electricBill) async {
   return await showModalBottomSheet<bool?>(
@@ -41,7 +42,7 @@ class ElectricBillManagerState extends State<ElectricBillManager> {
     super.initState();
     setState(() {
       _electricBill = widget.electricBill;
-      _ctrlDate.text = _electricBill.date.format(dateOnly: true);
+      _ctrlDate.text = _electricBill.date.formatToMonthYear();
       _ctrlAmount.text = _electricBill.amount.toString();
     });
   }
@@ -75,27 +76,37 @@ class ElectricBillManagerState extends State<ElectricBillManager> {
           ),
         ),
         [
-          Expanded(child: TextButton(onPressed: _cancel, child: Text('Cancel'))),
+          Expanded(
+              child: TextButton(onPressed: _cancel, child: Text('Cancel'))),
           VerticalDivider(
             thickness: 1.5,
             indent: 7,
             endIndent: 7,
           ),
           Expanded(
-            child: TextButton(onPressed: _saveElectricBill, child: Text(_electricBill.id == null ? 'Insert' : 'Update')),
+            child: TextButton(
+                onPressed: _saveElectricBill,
+                child: Text(_electricBill.id == null ? 'Insert' : 'Update')),
           )
         ],
         header: "Manage Electric Bill");
   }
 
   _getDate() async {
-    var date = await showDatePicker(context: context, initialDate: _electricBill.date, firstDate: _firstDate, lastDate: _lastDate);
-    if (date != null) {
-      setState(() {
-        _electricBill.date = date;
-        _ctrlDate.text = _electricBill.date.format(dateOnly: true);
-      });
-    }
+    showMonthPicker(
+      context: context,
+      firstDate: _firstDate,
+      lastDate: _lastDate,
+      initialDate: _electricBill.date,
+      locale: Locale("en"),
+    ).then((date) async {
+      if (date != null) {
+        setState(() {
+          _electricBill.date = date;
+          _ctrlDate.text = _electricBill.date.formatToMonthYear();
+        });
+      }
+    });
   }
 
   _cancel() {
@@ -120,7 +131,9 @@ class ElectricBillManagerState extends State<ElectricBillManager> {
       });
       Navigator.of(context).pop(true);
     } catch (_) {
-      Fluttertoast.showToast(msg: "Unable to ${_electricBill.id == null ? 'insert' : 'update'} electric bill");
+      Fluttertoast.showToast(
+          msg:
+              "Unable to ${_electricBill.id == null ? 'insert' : 'update'} electric bill");
     }
   }
 }

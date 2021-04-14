@@ -12,7 +12,8 @@ class ExpenseDetailsManagement extends StatefulWidget {
   final Expense expense;
   const ExpenseDetailsManagement(this.expense);
   @override
-  _ExpenseDetailsManagementState createState() => _ExpenseDetailsManagementState();
+  _ExpenseDetailsManagementState createState() =>
+      _ExpenseDetailsManagementState();
 }
 
 class _ExpenseDetailsManagementState extends State<ExpenseDetailsManagement> {
@@ -58,24 +59,29 @@ class _ExpenseDetailsManagementState extends State<ExpenseDetailsManagement> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(_expensesDetails[index].item!.description.toString(), style: cardTitleStyle2)
+                    Text(_expensesDetails[index].item!.description.toString(),
+                        style: cardTitleStyle2)
                   ],
                 ),
               ),
               subtitle: Text(_expensesDetails[index].date.formatToHour()),
-              trailing: Column(crossAxisAlignment: CrossAxisAlignment.end, mainAxisAlignment: MainAxisAlignment.center, children: [
-                Text(
-                  _expensesDetails[index].totalPrice.format(),
-                  style: TextStyle(fontSize: 15, color: Colors.red),
-                ),
-                Text(
-                  "${_expensesDetails[index].price.format()} x ${_expensesDetails[index].quantity}",
-                  style: TextStyle(fontWeight: FontWeight.w200),
-                ),
-              ]),
+              trailing: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      _expensesDetails[index].totalPrice.format(),
+                      style: TextStyle(fontSize: 15, color: Colors.red),
+                    ),
+                    Text(
+                      "${_expensesDetails[index].price.format()} x ${_expensesDetails[index].quantity}",
+                      style: TextStyle(fontWeight: FontWeight.w200),
+                    ),
+                  ]),
             ),
             onDelete: () async {
-              return await _deleteExpenseDetail(_expensesDetails[index]) ?? false;
+              return await _deleteExpenseDetail(_expensesDetails[index]) ??
+                  false;
             },
             onEdit: () async {
               setState(() {
@@ -91,7 +97,11 @@ class _ExpenseDetailsManagementState extends State<ExpenseDetailsManagement> {
   }
 
   String _getTotal(DateTime date) {
-    return _expensesDetails.where((element) => element.date.format() == date.format()).fold(0, (num previousValue, element) => previousValue + element.totalPrice).format();
+    return _expensesDetails
+        .where((element) => element.date.format() == date.format())
+        .fold(0,
+            (num previousValue, element) => previousValue + element.totalPrice)
+        .format();
   }
 
   _getExpenseDetails() async {
@@ -102,7 +112,8 @@ class _ExpenseDetailsManagementState extends State<ExpenseDetailsManagement> {
         _expensesDetails.clear();
         for (int i = 0; i < ed.length; i++) {
           var e = ed[i];
-          if (_currentDate.isEmpty || _currentDate != e.date.format(dateOnly: true)) {
+          if (_currentDate.isEmpty ||
+              _currentDate != e.date.format(dateOnly: true)) {
             _currentDate = e.date.format(dateOnly: true);
             e.isHead = true;
             if (i != 0) {
@@ -127,7 +138,9 @@ class _ExpenseDetailsManagementState extends State<ExpenseDetailsManagement> {
   }
 
   Future<bool?> _deleteExpenseDetail(ExpenseDetails obj) async {
-    if ((await showDeleteRecordManager(context, "Deleting", "Do you want to delete ${obj.item?.description} in ${obj.date.format(dateOnly: true)}?")) ?? false) {
+    if ((await showDeleteRecordManager(context, "Deleting",
+            "Do you want to delete ${obj.item?.description} in ${obj.date.format(dateOnly: true)}?")) ??
+        false) {
       if ((await db.deleteExpenseDetails(obj.id ?? 0)) > 0) {
         _getExpenseDetails();
         return true;
@@ -142,6 +155,7 @@ class _ExpenseDetailsManagementState extends State<ExpenseDetailsManagement> {
   }
 
   _manageExpenseDetail() async {
-    if ((await showExpenseDetailManager(context, _selectedExpenseDetail)) ?? false) _getExpenseDetails();
+    if ((await showExpenseDetailManager(context, _selectedExpenseDetail)) ??
+        false) _getExpenseDetails();
   }
 }

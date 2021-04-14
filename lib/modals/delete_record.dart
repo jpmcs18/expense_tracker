@@ -22,7 +22,11 @@ class DeleteRecord extends StatelessWidget {
         Text(body),
         [
           Expanded(child: TextButton(onPressed: _no, child: Text('No'))),
-          VerticalDivider(thickness: 1.5, indent: 7, endIndent: 7,),
+          VerticalDivider(
+            thickness: 1.5,
+            indent: 7,
+            endIndent: 7,
+          ),
           Expanded(child: TextButton(onPressed: _yes, child: Text('Yes')))
         ],
         header: title);

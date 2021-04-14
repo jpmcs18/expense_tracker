@@ -53,20 +53,14 @@ class _BillsState extends State<Bills> {
                 child: Container(
                   margin: EdgeInsets.only(left: 10, bottom: 10, top: 10),
                   decoration: BoxDecoration(
-                    color: (menu.isSelected ?? false)
-                        ? Theme.of(context).buttonColor
-                        : Colors.white,
-                    borderRadius: BorderRadius.circular(20)
-                  ),
+                      color: (menu.isSelected ?? false)
+                          ? Theme.of(context).buttonColor
+                          : Colors.white,
+                      borderRadius: BorderRadius.circular(20)),
                   padding: EdgeInsets.all(15),
                   child: Text(
                     menu.location ?? "",
                     textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: (menu.isSelected ?? false)
-                          ? Theme.of(context).accentColor
-                          : Colors.black,
-                    ),
                   ),
                 ),
               );

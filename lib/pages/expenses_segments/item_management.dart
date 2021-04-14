@@ -46,7 +46,8 @@ class ItemManagementState extends State<ItemManagement> {
             isBottom: _items[index].isBottom,
             id: _items[index].id.toString(),
             child: ListTile(
-                title: Text(_items[index].description ?? "", style: cardTitleStyle2),
+                title: Text(_items[index].description ?? "",
+                    style: cardTitleStyle2),
                 subtitle: Text(_items[index].createdOn.formatLocalize()),
                 trailing: Text(
                   _items[index].amount.format(),
@@ -69,7 +70,10 @@ class ItemManagementState extends State<ItemManagement> {
   }
 
   String _getTotal(int itemTypeId) {
-    return _items.where((element) => element.itemTypeId == itemTypeId).fold(0, (num previousValue, element) => previousValue + element.amount).format();
+    return _items
+        .where((element) => element.itemTypeId == itemTypeId)
+        .fold(0, (num previousValue, element) => previousValue + element.amount)
+        .format();
   }
 
   _addNewItem() {
@@ -103,12 +107,10 @@ class ItemManagementState extends State<ItemManagement> {
         }
         _items.last.isBottom = true;
       });
-    }
-    else{
+    } else {
       setState(() {
-              
         _items.clear();
-            });
+      });
     }
   }
 
@@ -117,7 +119,9 @@ class ItemManagementState extends State<ItemManagement> {
       Fluttertoast.showToast(msg: "Unable to delete ${obj.description}");
       return false;
     }
-    if ((await showDeleteRecordManager(context, "Deleting", "Continue deleting '${obj.description}'?")) ?? false) {
+    if ((await showDeleteRecordManager(
+            context, "Deleting", "Continue deleting '${obj.description}'?")) ??
+        false) {
       if ((await db.deleteItem(obj.id ?? 0)) > 0) {
         await _getItems();
         return true;

@@ -35,10 +35,11 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primaryColor: Colors.blue[700],
-        accentColor: Colors.white,
+        accentColor: Colors.blue[500],
         canvasColor: Colors.blue[50],
         cardColor: Colors.white,
         buttonColor: Colors.blue[300],
+        primarySwatch: Colors.blue,
         // brightness: Brightness.light
       ),
       initialRoute: LandingPage.route,
@@ -53,7 +54,8 @@ class MyApp extends StatelessWidget {
           case Incomes.route:
             return _buildRoute(setting, Incomes());
           case FolderBrowser.route:
-            return _buildRoute(setting, FolderBrowser(args: setting.arguments as FolderArguments));
+            return _buildRoute(setting,
+                FolderBrowser(args: setting.arguments as FolderArguments));
           default:
             return _buildRoute(setting, LandingPage());
         }
@@ -64,7 +66,7 @@ class MyApp extends StatelessWidget {
   MaterialPageRoute _buildRoute(RouteSettings settings, Widget page) {
     return new MaterialPageRoute(
       settings: settings,
-      builder: (ctx) => page,
+      builder: (ctx) => SafeArea(child: page),
     );
   }
 }

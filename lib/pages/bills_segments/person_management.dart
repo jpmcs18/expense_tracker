@@ -46,7 +46,9 @@ class PersonManagementState extends State<PersonManagement> {
                 title: Container(
                     child: Row(
                   children: [
-                    Expanded(child: Text(_persons[index].name ?? "", style: cardTitleStyle2))
+                    Expanded(
+                        child: Text(_persons[index].name ?? "",
+                            style: cardTitleStyle2))
                   ],
                 )),
                 subtitle: Text(_persons[index].createdOn.formatLocalize()),
@@ -71,7 +73,9 @@ class PersonManagementState extends State<PersonManagement> {
       Fluttertoast.showToast(msg: "Unable to delete ${obj.name}");
       return false;
     }
-    if ((await showDeleteRecordManager(context, "Deleting", "Do you want to delete ${obj.name}?")) ?? false) {
+    if ((await showDeleteRecordManager(
+            context, "Deleting", "Do you want to delete ${obj.name}?")) ??
+        false) {
       if ((await db.deletePerson(obj.id ?? 0)) > 0) {
         await _getPersons();
         return true;
@@ -88,7 +92,8 @@ class PersonManagementState extends State<PersonManagement> {
   }
 
   _managePerson() async {
-    if ((await showPersonManager(context, _selectedPerson)) ?? false) _getPersons();
+    if ((await showPersonManager(context, _selectedPerson)) ?? false)
+      _getPersons();
   }
 
   _getPersons() async {

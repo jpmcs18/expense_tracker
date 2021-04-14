@@ -1,12 +1,13 @@
 import 'package:expense_management/models/expenses/expense.dart';
 import 'package:expense_management/models/expenses/item.dart';
 import 'package:expense_management/models/model_base.dart';
+import 'package:expense_management/models/titled_model_mixin.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'expense_details.g.dart';
 
 @JsonSerializable()
-class ExpenseDetails extends ModelBase {
+class ExpenseDetails extends ModelBase with TitledModelMixin {
   DateTime date = DateTime.now();
   int quantity = 0;
   num price = 0;
@@ -17,15 +18,9 @@ class ExpenseDetails extends ModelBase {
 
   @JsonKey(ignore: true)
   Item? item;
-  
+
   @JsonKey(ignore: true)
   Expense? expense;
-
-  @JsonKey(ignore: true)
-  bool isHead = false;
-
-  @JsonKey(ignore: true)
-  bool isBottom = false;
 
   @JsonKey(ignore: true)
   num get totalPrice {

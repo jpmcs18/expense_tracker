@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:expense_management/modals/modal_base.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:expense_management/helpers/extensions/format_extension.dart';
+import 'package:month_picker_dialog/month_picker_dialog.dart';
 
 Future<bool?> showWaterReadingManager(context, waterReading) async {
   return await showModalBottomSheet<bool?>(
@@ -44,7 +45,7 @@ class WaterReadingManagerState extends State<WaterReadingManager> {
     super.initState();
     setState(() {
       _waterReading = widget.waterReading;
-      _ctrlDate.text = _waterReading.date.format(dateOnly: true);
+      _ctrlDate.text = _waterReading.date.formatToMonthYear();
       _ctrlReading.text = _waterReading.reading.toString();
     });
     _initStateAsync();
@@ -86,14 +87,17 @@ class WaterReadingManagerState extends State<WaterReadingManager> {
           ),
         ),
         [
-          Expanded(child: TextButton(onPressed: _cancel, child: Text('Cancel'))),
+          Expanded(
+              child: TextButton(onPressed: _cancel, child: Text('Cancel'))),
           VerticalDivider(
             thickness: 1.5,
             indent: 7,
             endIndent: 7,
           ),
           Expanded(
-            child: TextButton(onPressed: _saveWaterReading, child: Text(_waterReading.id == null ? 'Insert' : 'Update')),
+            child: TextButton(
+                onPressed: _saveWaterReading,
+                child: Text(_waterReading.id == null ? 'Insert' : 'Update')),
           )
         ],
         header: "Manage Water Reading");
@@ -108,13 +112,20 @@ class WaterReadingManagerState extends State<WaterReadingManager> {
   }
 
   _getDate() async {
-    var date = await showDatePicker(context: context, initialDate: _waterReading.date, firstDate: _firstDate, lastDate: _lastDate);
-    if (date != null) {
-      setState(() {
-        _waterReading.date = date;
-        _ctrlDate.text = _waterReading.date.format(dateOnly: true);
-      });
-    }
+    showMonthPicker(
+      context: context,
+      firstDate: _firstDate,
+      lastDate: _lastDate,
+      initialDate: _waterReading.date,
+      locale: Locale("en"),
+    ).then((date) async {
+      if (date != null) {
+        setState(() {
+          _waterReading.date = date;
+          _ctrlDate.text = _waterReading.date.formatToMonthYear();
+        });
+      }
+    });
   }
 
   _initStateAsync() async {
@@ -167,7 +178,9 @@ class WaterReadingManagerState extends State<WaterReadingManager> {
       });
       Navigator.of(context).pop(true);
     } catch (_) {
-      Fluttertoast.showToast(msg: "Unable to ${_waterReading.id == null ? 'insert' : 'update'} Water reading");
+      Fluttertoast.showToast(
+          msg:
+              "Unable to ${_waterReading.id == null ? 'insert' : 'update'} Water reading");
     }
   }
 }
