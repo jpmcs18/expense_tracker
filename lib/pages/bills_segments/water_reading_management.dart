@@ -110,6 +110,8 @@ class WaterReadingManagementState extends State<WaterReadingManagement> {
             _waterReading.add(e);
           }
           _waterReading.last.isBottom = true;
+        } else {
+          _waterReading.clear();
         }
       });
     }

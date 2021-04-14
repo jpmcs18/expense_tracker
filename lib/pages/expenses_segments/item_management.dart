@@ -104,6 +104,12 @@ class ItemManagementState extends State<ItemManagement> {
         _items.last.isBottom = true;
       });
     }
+    else{
+      setState(() {
+              
+        _items.clear();
+            });
+    }
   }
 
   Future<bool?> _deleteItems(Item obj) async {

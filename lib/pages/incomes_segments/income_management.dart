@@ -103,6 +103,11 @@ class IncomeManagementState extends State<IncomeManagement> {
         _incomes.last.isBottom = true;
       });
     }
+    else {
+      setState(() {
+        _incomes.clear();
+            });
+    }
   }
 
   Future<bool?> _deleteIncomes(Income obj) async {

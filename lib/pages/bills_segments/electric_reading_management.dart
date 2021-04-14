@@ -111,6 +111,9 @@ class ElectricReadingManagementState extends State<ElectricReadingManagement> {
           }
           _electricReading.last.isBottom = true;
         }
+        else{
+        _electricReading.clear();
+        }
       });
     }
   }
