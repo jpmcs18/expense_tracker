@@ -1,8 +1,10 @@
 import 'package:expense_management/databases/main_db.dart';
-import 'package:expense_management/modals/delete_record.dart';
+import 'package:expense_management/modals/ask.dart';
 import 'package:expense_management/modals/incomes/income_manager.dart';
 import 'package:expense_management/models/incomes/income.dart';
 import 'package:expense_management/pages/components/custom_dismissible.dart';
+import 'package:expense_management/pages/drawer.dart';
+import 'package:expense_management/pages/incomes.dart';
 import 'package:expense_management/pages/styles/style.dart';
 import 'package:flutter/material.dart';
 import 'package:expense_management/helpers/extensions/format_extension.dart';
@@ -26,6 +28,7 @@ class IncomeManagementState extends State<IncomeManagement> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: MainDrawer(Incomes.route),
       appBar: AppBar(
         title: Row(
           children: [
@@ -115,7 +118,7 @@ class IncomeManagementState extends State<IncomeManagement> {
   }
 
   Future<bool?> _deleteIncomes(Income obj) async {
-    if ((await showDeleteRecordManager(context, "Deleting",
+    if ((await showAskModal(context, "Deleting",
             "Do you want to delete income for ${obj.date.format(dateOnly: true)}?")) ??
         false) {
       if ((await db.deleteIncome(obj.id ?? 0)) > 0) {

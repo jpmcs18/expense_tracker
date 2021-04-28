@@ -32,7 +32,7 @@ class _CustomCardState extends State<CustomCard> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.all(10),
+      margin: EdgeInsets.all(5),
       decoration: BoxDecoration(
           borderRadius: BorderRadius.all(Radius.circular(radius)),
           color: Theme.of(context).cardColor),

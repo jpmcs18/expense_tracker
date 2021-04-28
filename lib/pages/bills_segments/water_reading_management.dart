@@ -1,8 +1,10 @@
 import 'package:expense_management/databases/main_db.dart';
 import 'package:expense_management/modals/bills/water_reading_manager.dart';
-import 'package:expense_management/modals/delete_record.dart';
+import 'package:expense_management/modals/ask.dart';
 import 'package:expense_management/models/bills/water_reading.dart';
+import 'package:expense_management/pages/bills.dart';
 import 'package:expense_management/pages/components/custom_dismissible.dart';
+import 'package:expense_management/pages/drawer.dart';
 import 'package:expense_management/pages/styles/style.dart';
 import 'package:flutter/material.dart';
 import 'package:expense_management/helpers/extensions/format_extension.dart';
@@ -26,6 +28,7 @@ class WaterReadingManagementState extends State<WaterReadingManagement> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: MainDrawer(Bills.route),
       appBar: AppBar(
         title: Row(
           children: [
@@ -74,7 +77,7 @@ class WaterReadingManagementState extends State<WaterReadingManagement> {
   }
 
   Future<bool?> _deleteWaterReading(WaterReading obj) async {
-    if ((await showDeleteRecordManager(context, "Deleting",
+    if ((await showAskModal(context, "Deleting",
             "Do you want to delete reading for ${obj.date.formatToMonthYear()}?")) ??
         false) {
       if ((await db.deleteWaterReading(obj.id ?? 0)) > 0) {

@@ -1,8 +1,10 @@
 import 'package:expense_management/databases/main_db.dart';
-import 'package:expense_management/modals/delete_record.dart';
+import 'package:expense_management/modals/ask.dart';
 import 'package:expense_management/modals/expenses/expense_manager.dart';
 import 'package:expense_management/models/expenses/expense.dart';
 import 'package:expense_management/pages/components/custom_dismissible.dart';
+import 'package:expense_management/pages/drawer.dart';
+import 'package:expense_management/pages/expenses.dart';
 import 'package:expense_management/pages/expenses_segments/expense_details_management.dart';
 import 'package:expense_management/pages/styles/style.dart';
 import 'package:flutter/material.dart';
@@ -28,6 +30,7 @@ class _ExpenseManagementState extends State<ExpenseManagement> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: MainDrawer(Expenses.route),
       appBar: AppBar(
         title: Row(
           children: [
@@ -82,7 +85,7 @@ class _ExpenseManagementState extends State<ExpenseManagement> {
       Fluttertoast.showToast(msg: "Unable to delete ${obj.title}");
       return false;
     }
-    if ((await showDeleteRecordManager(
+    if ((await showAskModal(
             context, "Deleting", "Do you want to delete ${obj.title}?")) ??
         false) {
       if ((await db.deleteExpense(obj.id ?? 0)) > 0) {

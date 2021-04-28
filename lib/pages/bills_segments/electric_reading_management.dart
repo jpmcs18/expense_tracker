@@ -1,8 +1,10 @@
 import 'package:expense_management/databases/main_db.dart';
 import 'package:expense_management/modals/bills/electric_reading_manager.dart';
-import 'package:expense_management/modals/delete_record.dart';
+import 'package:expense_management/modals/ask.dart';
 import 'package:expense_management/models/bills/electric_reading.dart';
+import 'package:expense_management/pages/bills.dart';
 import 'package:expense_management/pages/components/custom_dismissible.dart';
+import 'package:expense_management/pages/drawer.dart';
 import 'package:expense_management/pages/styles/style.dart';
 import 'package:flutter/material.dart';
 import 'package:expense_management/helpers/extensions/format_extension.dart';
@@ -27,6 +29,7 @@ class ElectricReadingManagementState extends State<ElectricReadingManagement> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: MainDrawer(Bills.route),
       appBar: AppBar(
         title: Row(
           children: [
@@ -78,7 +81,7 @@ class ElectricReadingManagementState extends State<ElectricReadingManagement> {
   }
 
   Future<bool?> _deleteElectricReading(ElectricReading obj) async {
-    if ((await showDeleteRecordManager(context, "Deleting",
+    if ((await showAskModal(context, "Deleting",
             "Do you want to delete reading for ${obj.date.formatToMonthYear()}?")) ??
         false) {
       if ((await db.deleteElectricReading(obj.id ?? 0)) > 0) {

@@ -12,6 +12,10 @@ extension DateFormatHelper on DateTime {
         .format(this);
   }
 
+  String backupDate() {
+    return DateFormat("MMMMddyyyyhhmmaaa").format(this);
+  }
+
   bool isCurrentMonth() {
     DateTime first = DateTime(this.year, this.month, 1);
     DateTime last =
@@ -78,7 +82,7 @@ extension DateFormatHelper on DateTime {
   }
 }
 
-extension ArrayHelper on List<dynamic> {
+extension ArrayHelper on Iterable<dynamic> {
   dynamic firstOrNull() => this.length == 0 ? null : this.first;
 }
 

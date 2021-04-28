@@ -64,7 +64,7 @@ class MyApp extends StatelessWidget {
   }
 
   MaterialPageRoute _buildRoute(RouteSettings settings, Widget page) {
-    return new MaterialPageRoute(
+    return MaterialPageRoute(
       settings: settings,
       builder: (ctx) => SafeArea(child: page),
     );

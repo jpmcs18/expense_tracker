@@ -1,21 +1,21 @@
 import 'package:expense_management/modals/modal_base.dart';
 import 'package:flutter/material.dart';
 
-Future<bool?> showDeleteRecordManager(context, title, body) async {
+Future<bool?> showAskModal(context, title, body) async {
   return await showModalBottomSheet<bool?>(
     context: context,
     isScrollControlled: true,
     builder: (context) {
-      return DeleteRecord(context, title, body);
+      return Ask(context, title, body);
     },
   );
 }
 
-class DeleteRecord extends StatelessWidget {
+class Ask extends StatelessWidget {
   final BuildContext context;
   final String title;
   final String body;
-  DeleteRecord(this.context, this.title, this.body);
+  Ask(this.context, this.title, this.body);
   @override
   Widget build(BuildContext context) {
     return generateModalBody(

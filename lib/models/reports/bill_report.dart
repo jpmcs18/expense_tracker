@@ -2,16 +2,20 @@ import 'package:expense_management/models/bills/person.dart';
 
 class BillReport {
   Person? person;
-  int? previousMonthElectricReading;
-  int? previousMonthWaterReading;
-  int? electricReading;
-  int? waterReading;
-  int? get electricConsumption {
-    return (electricReading ?? 0) - (previousMonthElectricReading ?? 0);
+  int previousMonthElectricReading;
+  int previousMonthWaterReading;
+  int electricReading;
+  int waterReading;
+  int get electricConsumption {
+    return electricReading < previousMonthElectricReading
+        ? 0
+        : electricReading - previousMonthElectricReading;
   }
 
-  int? get waterConsumption {
-    return (waterReading ?? 0) - (previousMonthWaterReading ?? 0);
+  int get waterConsumption {
+    return waterReading < previousMonthWaterReading
+        ? 0
+        : waterReading - previousMonthWaterReading;
   }
 
   num electricBillAmount = 0;
@@ -23,8 +27,8 @@ class BillReport {
 
   BillReport(
       {this.person,
-      this.previousMonthWaterReading,
-      this.previousMonthElectricReading,
-      this.waterReading,
-      this.electricReading});
+      this.previousMonthWaterReading = 0,
+      this.previousMonthElectricReading = 0,
+      this.waterReading = 0,
+      this.electricReading = 0});
 }

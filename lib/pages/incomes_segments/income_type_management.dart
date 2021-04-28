@@ -1,8 +1,10 @@
 import 'package:expense_management/databases/main_db.dart';
-import 'package:expense_management/modals/delete_record.dart';
+import 'package:expense_management/modals/ask.dart';
 import 'package:expense_management/modals/incomes/income_type_manager.dart';
 import 'package:expense_management/models/incomes/income_type.dart';
 import 'package:expense_management/pages/components/custom_dismissible.dart';
+import 'package:expense_management/pages/drawer.dart';
+import 'package:expense_management/pages/incomes.dart';
 import 'package:expense_management/pages/styles/style.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -27,6 +29,7 @@ class IncomeTypeManagementState extends State<IncomeTypeManagement> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: MainDrawer(Incomes.route),
       appBar: AppBar(
         title: Row(
           children: [
@@ -73,7 +76,7 @@ class IncomeTypeManagementState extends State<IncomeTypeManagement> {
       Fluttertoast.showToast(msg: "Unable to delete ${obj.description}");
       return false;
     }
-    if ((await showDeleteRecordManager(context, "Deleting",
+    if ((await showAskModal(context, "Deleting",
             "Do you want to delete ${obj.description}?")) ??
         false) {
       if ((await db.deleteIncomeType(obj.id ?? 0)) > 0) {
