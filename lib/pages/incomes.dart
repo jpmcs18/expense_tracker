@@ -41,18 +41,18 @@ class _IncomesState extends State<Incomes> {
                 },
                 child: Container(
                   decoration: BoxDecoration(
-                      color: (menu.isSelected ?? false)
-                          ? Theme.of(context).primaryColor
-                          : Colors.white,),
+                    color: (menu.isSelected ?? false)
+                        ? Theme.of(context).primaryColor
+                        : Colors.white,
+                  ),
                   padding: EdgeInsets.all(15),
                   child: Text(
                     menu.location ?? "",
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      color: (menu.isSelected ?? false)
-                          ? Colors.white
-                          : Theme.of(context).primaryColor
-                    ),
+                        color: (menu.isSelected ?? false)
+                            ? Colors.white
+                            : Theme.of(context).primaryColor),
                   ),
                 ),
               ),

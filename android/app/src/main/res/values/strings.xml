@@ -1,5 +1,5 @@
 <resources>
-    <string name="facebook_app_id">128482712607741</string>
+    <string name="facebook_app_id">801731670768323</string>
     <string name="app_name">Expense Management</string>
-    <string name="fb_login_protocol_scheme">fb128482712607741</string>
+    <string name="fb_login_protocol_scheme">fb801731670768323</string>
 </resources>

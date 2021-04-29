@@ -72,8 +72,14 @@ class FolderBrowserState extends State<FolderBrowser> {
                         InkWell(
                           child: Container(
                             child: Text(
-                              basename(e.path.endsWith("/0") ? "Internal Storage" : e.path),
-                              style: TextStyle(color: (_cnt != _selectedDir.length - 1) ? Colors.black : Theme.of(context).primaryColor, fontSize: 16),
+                              basename(e.path.endsWith("/0")
+                                  ? "Internal Storage"
+                                  : e.path),
+                              style: TextStyle(
+                                  color: (_cnt != _selectedDir.length - 1)
+                                      ? Colors.black
+                                      : Theme.of(context).primaryColor,
+                                  fontSize: 16),
                             ),
                           ),
                           onTap: () {
@@ -101,23 +107,34 @@ class FolderBrowserState extends State<FolderBrowser> {
                   return Container(
                     decoration: BoxDecoration(
                       color: Theme.of(context).cardColor,
-                      borderRadius: BorderRadius.only(topLeft: Radius.circular(isTop ? 10 : 0), topRight: Radius.circular(isTop ? 10 : 0), bottomLeft: Radius.circular(isBottom ? 10 : 0), bottomRight: Radius.circular(isBottom ? 10 : 0)),
+                      borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(isTop ? 10 : 0),
+                          topRight: Radius.circular(isTop ? 10 : 0),
+                          bottomLeft: Radius.circular(isBottom ? 10 : 0),
+                          bottomRight: Radius.circular(isBottom ? 10 : 0)),
                     ),
-                    margin: EdgeInsets.only(top: isTop ? 5 : 0, bottom: isBottom ? 10 : 0, left: 10, right: 10),
+                    margin: EdgeInsets.only(
+                        top: isTop ? 5 : 0,
+                        bottom: isBottom ? 10 : 0,
+                        left: 10,
+                        right: 10),
                     child: Column(
                       children: [
                         ListTile(
                           leading: FutureBuilder(
-                            future: FileSystemEntity.type(_folders[index]?.path ?? ''),
+                            future: FileSystemEntity.type(
+                                _folders[index]?.path ?? ''),
                             builder: (context, snapshot) {
-                              if (snapshot.connectionState == ConnectionState.waiting)
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting)
                                 return Icon(Icons.device_unknown);
                               else {
                                 switch (snapshot.data) {
                                   case FileSystemEntityType.directory:
                                     return Icon(Icons.folder_outlined);
                                   case FileSystemEntityType.file:
-                                    return Icon(Icons.insert_drive_file_outlined);
+                                    return Icon(
+                                        Icons.insert_drive_file_outlined);
                                   default:
                                     return Icon(Icons.device_unknown);
                                 }
@@ -169,7 +186,9 @@ class FolderBrowserState extends State<FolderBrowser> {
                   Container(
                     child: CustomButton(
                       title: widget.args.openFile ? 'Open' : 'Save',
-                      icon: widget.args.openFile ? Icons.read_more_outlined : Icons.save_outlined,
+                      icon: widget.args.openFile
+                          ? Icons.read_more_outlined
+                          : Icons.save_outlined,
                       onTap: widget.args.openFile && _selectedFile == null
                           ? null
                           : () {
@@ -191,12 +210,15 @@ class FolderBrowserState extends State<FolderBrowser> {
   }
 
   _makeNewFolder(BuildContext context) async {
-    if ((await showFolderManager(context, _directory?.path ?? '')) ?? false) _getFolder(_directory);
+    if ((await showFolderManager(context, _directory?.path ?? '')) ?? false)
+      _getFolder(_directory);
   }
 
   _getFolder(Directory? directory) async {
     if (widget.args.openFile) {
-      if (await FileSystemEntity.type(directory?.path ?? '') == FileSystemEntityType.file && (directory?.path ?? '').endsWith(widget.args.ext ?? '')) {
+      if (await FileSystemEntity.type(directory?.path ?? '') ==
+              FileSystemEntityType.file &&
+          (directory?.path ?? '').endsWith(widget.args.ext ?? '')) {
         setState(() {
           _selectedFile = directory;
           _ctrlFileName.text = basename(directory?.path ?? '');
@@ -204,7 +226,8 @@ class FolderBrowserState extends State<FolderBrowser> {
         return;
       }
     }
-    if (await FileSystemEntity.type(directory?.path ?? '') != FileSystemEntityType.directory) return;
+    if (await FileSystemEntity.type(directory?.path ?? '') !=
+        FileSystemEntityType.directory) return;
     if (directory == null) return;
     try {
       if (widget.args.openFile) {
@@ -224,7 +247,8 @@ class FolderBrowserState extends State<FolderBrowser> {
             .toList();
         setState(() {
           _directory = directory;
-          d.sort((a, b) => basename(a?.path ?? '').compareTo(basename(b?.path ?? '')));
+          d.sort((a, b) =>
+              basename(a?.path ?? '').compareTo(basename(b?.path ?? '')));
           _folders = d;
           _breakDownFolder();
         });
@@ -246,14 +270,18 @@ class FolderBrowserState extends State<FolderBrowser> {
       if (i > 2) _selectedDir.add(Directory(str));
     }
 
-    _ctrlList.animateTo(_ctrlList.position.maxScrollExtent, duration: Duration(seconds: 1), curve: Curves.ease);
+    _ctrlList.animateTo(_ctrlList.position.maxScrollExtent,
+        duration: Duration(seconds: 1), curve: Curves.ease);
   }
 
   _save(context) async {
     if (!widget.args.openFile) {
-      var path = join(_directory?.path ?? '', '${_ctrlFileName.text}.${widget.args.ext}');
+      var path = join(
+          _directory?.path ?? '', '${_ctrlFileName.text}.${widget.args.ext}');
       if (await File(path).exists()) {
-        if (!(await showAskModal(context, "File already exists", "Do you want to override?") ?? false)) return;
+        if (!(await showAskModal(
+                context, "File already exists", "Do you want to override?") ??
+            false)) return;
       }
 
       final file = await new File(path).create();
@@ -264,12 +292,14 @@ class FolderBrowserState extends State<FolderBrowser> {
       }
     }
 
-    Navigator.of(context).pop(widget.args.openFile ? _selectedFile?.path : null);
+    Navigator.of(context)
+        .pop(widget.args.openFile ? _selectedFile?.path : null);
   }
 
   Future<void> writeToFile(ByteData data, String path) async {
     final buffer = data.buffer;
-    await File(path).writeAsBytes(buffer.asUint8List(data.offsetInBytes, data.lengthInBytes));
+    await File(path).writeAsBytes(
+        buffer.asUint8List(data.offsetInBytes, data.lengthInBytes));
   }
 
   Future<bool> _checkFolder() async {

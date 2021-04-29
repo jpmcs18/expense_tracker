@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:expense_management/models/menu.dart';
 import 'package:expense_management/pages/bills.dart';
 import 'package:expense_management/pages/expenses.dart';
@@ -17,12 +15,12 @@ class MainDrawer extends StatefulWidget {
 
 class _MainDrawerState extends State<MainDrawer> {
   final plugin = FacebookLogin(debug: true);
-  String? _sdkVersion;
   FacebookAccessToken? _token;
   FacebookUserProfile? _profile;
   String? _email;
   String? _imageUrl;
   List<Menu> _menuItems = [
+    Menu(icon: Icon(Icons.home_outlined), location: 'Dashboard', route: LandingPage.route),
     Menu(icon: Icon(Icons.attach_money_outlined), location: 'Incomes', route: Incomes.route),
     Menu(icon: Icon(Icons.money_off_outlined), location: 'Expenses', route: Expenses.route),
     Menu(icon: Icon(Icons.payments_outlined), location: 'Bill', route: Bills.route),
@@ -32,7 +30,6 @@ class _MainDrawerState extends State<MainDrawer> {
   void initState() {
     super.initState();
 
-    _getSdkVersion();
     _updateLoginInfo();
   }
 
@@ -43,113 +40,133 @@ class _MainDrawerState extends State<MainDrawer> {
         child: Drawer(
       child: ListView(
         children: [
-          InkWell(
-            child: Container(
-              decoration: BoxDecoration(color: Theme.of(context).primaryColor),
-              padding: EdgeInsets.all(17.5),
-              child: Text(
-                "Menus",
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+          Row(
+            children: [
+              Container(
+                margin: EdgeInsets.all(15.0),
+                height: 70,
+                width: 70,
+                child: ClipOval(child: _imageUrl == null ? Image.asset('asset/user.png') : Image.network(_imageUrl!)),
               ),
-            ),
-            onTap: () {
-              Navigator.of(context).pop();
-              Navigator.of(context).pushReplacementNamed(LandingPage.route);
-            },
-          ),
-          Center(
-          child: Column(
-            children: <Widget>[
-              if (_sdkVersion != null) Text('SDK v$_sdkVersion'),
-              if (isLogin)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 10),
-                  child: _buildUserInfo(context, _profile!, _token!, _email),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    _profile == null
+                        ? Text('Login to view data')
+                        : Text(
+                            '${_profile!.firstName} ${_profile!.lastName}',
+                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                            softWrap: true,
+                          ),
+                    if (_email != null)
+                      Text(
+                        '$_email',
+                        softWrap: true,
+                      ),
+                  ],
                 ),
-              isLogin
-                  ? InkWell(
-                      child: Text('Log Out'),
-                      onTap: _onLogout,
-                    )
-                  : InkWell(
-                      child: Text('Log In'),
-                      onTap: _onLogin,
-                    ),
+              ),
             ],
           ),
-        ),
-          ..._menuItems.map(
-            (e) => ListTile(
-              leading: e.icon,
-              title: Text(
-                e.location!,
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              onTap: () {
-                Navigator.of(context).pop();
-                Navigator.of(context).pushReplacementNamed(e.route!);
-              },
-              selected: e.route == widget.route,
-            ),
+          Divider(
+            endIndent: 20,
+            indent: 20,
           ),
+            ..._menuItems.map(
+              (e) => ListTile(
+                leading: e.icon,
+                title: Text(
+                  e.location!,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  Navigator.of(context).pushReplacementNamed(e.route!);
+                },
+                selected: e.route == widget.route,
+              ),
+            ),
+          isLogin
+              ? ListTile(
+                  leading: Icon(Icons.logout),
+                  title: Text(
+                    'Logout',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                  onTap: _onLogout,
+                )
+              : ListTile(
+                  leading: Icon(Icons.login_outlined),
+                  title: Text(
+                    'Login',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                  onTap: _onLogin,
+                )
         ],
       ),
     ));
   }
 
-  Widget _buildUserInfo(BuildContext context, FacebookUserProfile profile,
-      FacebookAccessToken accessToken, String? email) {
-    final avatarUrl = _imageUrl;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        if (avatarUrl != null)
-          Center(
-            child: Image.network(avatarUrl),
-          ),
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            const Text('User: '),
-            Text(
-              '${profile.firstName} ${profile.lastName}',
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
-          ],
-        ),
-        const Text('AccessToken: '),
-        Text(
-          accessToken.token,
-          softWrap: true,
-        ),
-        if (email != null) Text('Email: $email'),
-      ],
-    );
-  }
-  
   Future<void> _onLogin() async {
-    await plugin.logIn(permissions: [
+    var res = await plugin.logIn(permissions: [
       FacebookPermission.publicProfile,
       FacebookPermission.email,
     ]);
+
+// Check result status
+    switch (res.status) {
+      case FacebookLoginStatus.success:
+        // Logged in
+
+        // Send access token to server for validation and auth
+        final FacebookAccessToken accessToken = res.accessToken!;
+        print('Access token: ${accessToken.token}');
+
+        // Get profile data
+        final profile = await plugin.getUserProfile();
+        print('Hello, ${profile!.name}! You ID: ${profile.userId}');
+
+        // Get user profile image url
+        final imageUrl = await plugin.getProfileImageUrl(width: 100);
+        print('Your profile image: $imageUrl');
+
+        // Get email (since we request email permission)
+        final email = await plugin.getUserEmail();
+        // But user can decline permission
+        if (email != null) print('And your email is $email');
+
+        break;
+      case FacebookLoginStatus.cancel:
+        // User cancel log in
+        print('asdasd--');
+        break;
+      case FacebookLoginStatus.error:
+        // Log in failed
+        print('Error while log in: ${res.error}');
+        break;
+      default:
+        print('--');
+        break;
+    }
     await _updateLoginInfo();
   }
 
   Future<void> _onLogout() async {
     await plugin.logOut();
     await _updateLoginInfo();
-  }
-
-
-  Future<void> _getSdkVersion() async {
-    final sdkVesion = await plugin.sdkVersion;
-    setState(() {
-      _sdkVersion = sdkVesion;
-    });
   }
 
   Future<void> _updateLoginInfo() async {
