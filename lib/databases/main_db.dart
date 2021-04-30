@@ -177,6 +177,27 @@ class MainDB {
     ''');
   }
 
+  Future clearDB() async {
+    
+    Database d = (await db)!;
+    await d.execute("DROP TABLE IF EXISTS tableName");
+    await d.execute('DROP TABLE IF EXISTS ${IncomeTypeHelper.tblName}');
+    await d.execute('DROP TABLE IF EXISTS ${IncomeHelper.tblName}');
+    await d.execute('DROP TABLE IF EXISTS ${PersonHelper.tblName}');
+    await d.execute('DROP TABLE IF EXISTS ${ElectricBillHelper.tblName}');
+    await d.execute('DROP TABLE IF EXISTS ${WaterBillHelper.tblName}');
+    await d.execute('DROP TABLE IF EXISTS ${ElectricReadingHelper.tblName}');
+    await d.execute('DROP TABLE IF EXISTS ${WaterReadingHelper.tblName}');
+    await d.execute('DROP TABLE IF EXISTS ${ItemTypeHelper.tblName}');
+    await d.execute('DROP TABLE IF EXISTS ${ItemHelper.tblName}');
+    await d.execute('DROP TABLE IF EXISTS ${ExpenseHelper.tblName}');
+    await d.execute('DROP TABLE IF EXISTS ${ExpenseDetailsHelper.tblName}');
+    
+    await _generateExpensesTables(d);
+    await _generateBillsTables(d);
+    await _generateIncomesTables(d);
+  }
+
   //START EXPENSES
   //ITEM TYPES MANAGEMENT
   Future<List<ItemType>> getItemTypes() async {

@@ -4,11 +4,22 @@ import 'package:expense_management/pages/expenses.dart';
 import 'package:expense_management/pages/incomes.dart';
 import 'package:expense_management/pages/landing_screen.dart';
 import 'package:expense_management/pages/reports/folder_browser.dart';
+import 'package:expense_management/providers/google_provider.dart';
+import 'package:expense_management/providers/user.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:provider/provider.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => User()),
+        ChangeNotifierProvider(create: (_) => GoogleProvider()),
+      ],
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -54,8 +65,7 @@ class MyApp extends StatelessWidget {
           case Incomes.route:
             return _buildRoute(setting, Incomes());
           case FolderBrowser.route:
-            return _buildRoute(setting,
-                FolderBrowser(args: setting.arguments as FolderArguments));
+            return _buildRoute(setting, FolderBrowser(args: setting.arguments as FolderArguments));
           default:
             return _buildRoute(setting, LandingPage());
         }

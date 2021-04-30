@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "32195540917",
+    "firebase_url": "https://expense-management-438d6-default-rtdb.firebaseio.com",
     "project_id": "expense-management-438d6",
     "storage_bucket": "expense-management-438d6.appspot.com"
   },
@@ -13,6 +14,14 @@
         }
       },
       "oauth_client": [
+        {
+          "client_id": "32195540917-r6nqd9i4762dmions9n9m793l899ujj7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.expense_management",
+            "certificate_hash": "4e864375d106bf67e7be8e0502dc3644aedba53c"
+          }
+        },
         {
           "client_id": "32195540917-4cscea5pd03u4eb7bc7971ptrpnmrjrr.apps.googleusercontent.com",
           "client_type": 3
