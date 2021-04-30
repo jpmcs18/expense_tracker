@@ -4,9 +4,7 @@ import 'package:expense_management/pages/expenses.dart';
 import 'package:expense_management/pages/incomes.dart';
 import 'package:expense_management/pages/landing_screen.dart';
 import 'package:expense_management/providers/google_provider.dart';
-import 'package:expense_management/providers/user.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_login_facebook/flutter_login_facebook.dart';
 import 'package:provider/provider.dart';
 
 class MainDrawer extends StatefulWidget {

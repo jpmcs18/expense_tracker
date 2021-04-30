@@ -3,9 +3,10 @@ import 'package:flutter/material.dart';
 class CustomButton extends StatelessWidget {
   final String title;
   final IconData? icon;
+  final bool isLoading;
   final Function()? onTap;
 
-  const CustomButton({required this.title, this.icon, this.onTap});
+  const CustomButton({required this.title, this.icon, this.onTap, this.isLoading = false});
   @override
   Widget build(BuildContext context) {
     return InkWell(
@@ -16,12 +17,14 @@ class CustomButton extends StatelessWidget {
           borderRadius: BorderRadius.all(Radius.circular(5)),
           color: Theme.of(context).primaryColor,
         ),
-        child: Row(
+        child: isLoading ? LinearProgressIndicator(minHeight: 25,) : Row(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             ...(icon == null
-                ? [SizedBox()]
+                ? [
+                    SizedBox()
+                  ]
                 : [
                     Icon(
                       icon!,

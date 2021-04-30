@@ -798,6 +798,9 @@ class _LandingPageState extends State<LandingPage> {
     return await pdf.save();
   }
 
+  bool _backuping = false;
+  bool _restoring = false;
+
   Widget _backupNRestoreData() {
     return CustomCard(
         title: "Backup & Restore",
@@ -811,7 +814,8 @@ class _LandingPageState extends State<LandingPage> {
             CustomButton(
               title: 'Backup',
               icon: Icons.file_download,
-              onTap: context.watch<GoogleProvider>().isLoggedIn ? _backupData : null,
+              isLoading: _backuping,
+              onTap: context.watch<GoogleProvider>().isLoggedIn && !_backuping ? _backupData : null,
             ),
             SizedBox(
               height: 10.0,
@@ -819,90 +823,109 @@ class _LandingPageState extends State<LandingPage> {
             CustomButton(
               title: 'Restore',
               icon: Icons.file_upload,
-              onTap: _restoreData,
+              isLoading: _restoring,
+              onTap: context.watch<GoogleProvider>().isLoggedIn && !_backuping ? _restoreData : null,
             ),
           ],
         ));
   }
 
   Future _backupData() async {
-    Backup _backup = Backup();
+    setState(() {
+      _backuping = true;
+    });
+    try {
+      Backup _backup = Backup();
 
-    _backup.income = await db.getIncomes();
-    _backup.incomeType = await db.getIncomeTypes();
+      _backup.income = await db.getIncomes();
+      _backup.incomeType = await db.getIncomeTypes();
 
-    _backup.person = await db.getPersons();
-    _backup.electricBill = await db.getElectricBills();
-    _backup.electricReading = await db.getElectricReadings();
-    _backup.waterBill = await db.getWaterBills();
-    _backup.waterReading = await db.getWaterReadings();
+      _backup.person = await db.getPersons();
+      _backup.electricBill = await db.getElectricBills();
+      _backup.electricReading = await db.getElectricReadings();
+      _backup.waterBill = await db.getWaterBills();
+      _backup.waterReading = await db.getWaterReadings();
 
-    _backup.expense = await db.getExpenses();
-    _backup.expenseDetails = await db.getExpenseDetails();
-    _backup.item = await db.getItems();
-    _backup.itemType = await db.getItemTypes();
+      _backup.expense = await db.getExpenses();
+      _backup.expenseDetails = await db.getExpenseDetails();
+      _backup.item = await db.getItems();
+      _backup.itemType = await db.getItemTypes();
 
-    String backupData = jsonEncode(_backup);
+      String backupData = jsonEncode(_backup);
 
-    context.read<GoogleProvider>().createFile("Backups", "${DateTime.now().backupDate()}.jpmb", backupData);
-    // await Navigator.of(context).pushNamed(FolderBrowser.route, arguments: FolderArguments(isText: true, text: backupData, ext: 'jpmb', filename: DateTime.now().backupDate()));
+      await context.read<GoogleProvider>().createFile("Backups", "${DateTime.now().backupDate()}.jpmb", backupData);
+      // await Navigator.of(context).pushNamed(FolderBrowser.route, arguments: FolderArguments(isText: true, text: backupData, ext: 'jpmb', filename: DateTime.now().backupDate()));
+    } catch (e) {} finally {
+      setState(() {
+        _backuping = false;
+      });
+    }
   }
 
   Future _restoreData() async {
-    var data = await Navigator.of(context).pushNamed(FolderBrowser.route, arguments: FolderArguments(openFile: true, ext: 'jpmb'));
-    if (data != null) {
-      var file = File((data as String));
-      var read = await file.readAsString();
+    setState(() {
+      _restoring = true;
+    });
+    try {
+      var data = await Navigator.of(context).pushNamed(FolderBrowser.route, arguments: FolderArguments(openFile: true, ext: 'jpmb'));
+      if (data != null) {
+        var file = File((data as String));
+        var read = await file.readAsString();
 
-      Backup _backup = Backup.fromJson(jsonDecode(read));
+        await db.clearDB();
 
-      for (var incomeType in _backup.incomeType ?? []) {
-        await db.insertIncomeType(incomeType);
-      }
+        Backup _backup = Backup.fromJson(jsonDecode(read));
 
-      for (var income in _backup.income ?? []) {
-        await db.insertIncome(income);
-      }
+        for (var incomeType in _backup.incomeType ?? []) {
+          await db.insertIncomeType(incomeType);
+        }
 
+        for (var income in _backup.income ?? []) {
+          await db.insertIncome(income);
+        }
 
-      for (var person in _backup.person ?? []) {
-        await db.insertPerson(person);
-      }
+        for (var person in _backup.person ?? []) {
+          await db.insertPerson(person);
+        }
 
-      for (var electricBill in _backup.electricBill ?? []) {
-        await db.insertElectricBill(electricBill);
-      }
+        for (var electricBill in _backup.electricBill ?? []) {
+          await db.insertElectricBill(electricBill);
+        }
 
-      for (var electricReading in _backup.electricReading ?? []) {
-        await db.insertElectricReading(electricReading);
-      }
+        for (var electricReading in _backup.electricReading ?? []) {
+          await db.insertElectricReading(electricReading);
+        }
 
-      for (var waterBill in _backup.waterBill ?? []) {
-        await db.insertWaterBill(waterBill);
-      }
+        for (var waterBill in _backup.waterBill ?? []) {
+          await db.insertWaterBill(waterBill);
+        }
 
-      for (var waterReading in _backup.waterReading ?? []) {
-        await db.insertWaterReading(waterReading);
-      }
-      
-      
-      for (var itemType in _backup.itemType ?? []) {
-        await db.insertItemType(itemType);
-      }
-      
-      for (var item in _backup.item ?? []) {
-        await db.insertItem(item);
-      }
-      
-      for (var expense in _backup.expense ?? []) {
-        await db.insertExpense(expense);
-      }
+        for (var waterReading in _backup.waterReading ?? []) {
+          await db.insertWaterReading(waterReading);
+        }
 
-      for (var expenseDetail in _backup.expenseDetails ?? []) {
-        await db.insertExpenseDetails(expenseDetail);
-      }
+        for (var itemType in _backup.itemType ?? []) {
+          await db.insertItemType(itemType);
+        }
 
-      await _getBillDetails();
+        for (var item in _backup.item ?? []) {
+          await db.insertItem(item);
+        }
+
+        for (var expense in _backup.expense ?? []) {
+          await db.insertExpense(expense);
+        }
+
+        for (var expenseDetail in _backup.expenseDetails ?? []) {
+          await db.insertExpenseDetails(expenseDetail);
+        }
+
+        await _getBillDetails();
+      }
+    } catch (e) {} finally {
+      setState(() {
+        _restoring = false;
+      });
     }
   }
 }
