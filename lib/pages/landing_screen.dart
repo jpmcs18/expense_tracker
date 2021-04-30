@@ -18,7 +18,6 @@ import 'package:expense_management/pages/drawer.dart';
 import 'package:expense_management/pages/reports/folder_browser.dart';
 import 'package:expense_management/providers/google_provider.dart';
 import 'package:expense_management/providers/user.dart';
-import 'package:firebase_core/firebase_core.dart';
 // import 'package:firebase_core/firebase_core.dart';
 // import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -39,7 +38,8 @@ class LandingPage extends StatefulWidget {
 class _LandingPageState extends State<LandingPage> {
   final MainDB db = MainDB.instance;
   // late DatabaseReference _db;
-  final _ctrlDate = TextEditingController(text: DateTime.now().formatToMonthYear());
+  final _ctrlDate =
+      TextEditingController(text: DateTime.now().formatToMonthYear());
   final List<ExpenseDetails> _expensesDetails = [];
   final List<ElectricBill> _electricBills = [];
   final List<WaterBill> _waterBills = [];
@@ -97,7 +97,8 @@ class _LandingPageState extends State<LandingPage> {
         setState(() {
           _income.clear();
           _income.addAll(res);
-          _grandTotalIncome = res.fold(0, (previousValue, element) => previousValue + element.amount);
+          _grandTotalIncome = res.fold(
+              0, (previousValue, element) => previousValue + element.amount);
         });
       }
     } catch (_) {
@@ -111,8 +112,10 @@ class _LandingPageState extends State<LandingPage> {
       if (res.length > 0 && this.mounted) {
         setState(() {
           _expensesDetails.clear();
-          _expensesDetails.addAll(res.where((element) => element.date.isCurrentMonth()));
-          _grandTotalExpenses = res.fold(0, (previousValue, element) => previousValue + element.totalPrice);
+          _expensesDetails
+              .addAll(res.where((element) => element.date.isCurrentMonth()));
+          _grandTotalExpenses = res.fold(0,
+              (previousValue, element) => previousValue + element.totalPrice);
           _fillExpensesReport();
         });
       }
@@ -189,7 +192,8 @@ class _LandingPageState extends State<LandingPage> {
             default:
               break;
           }
-          _expenseReportData[_title] = (_expenseReportData[_title] ?? 0) + e.totalPrice;
+          _expenseReportData[_title] =
+              (_expenseReportData[_title] ?? 0) + e.totalPrice;
 
           _totalExpenses += e.totalPrice;
         });
@@ -200,14 +204,56 @@ class _LandingPageState extends State<LandingPage> {
   _fillBillReport() {
     if (this.mounted) {
       setState(() {
-        _electricBill = _electricBills.where((element) => element.date.formatToMonthYear() == _selectedDate.formatToMonthYear()).toList().firstOrNull()?.amount ?? 0;
-        _waterBill = _waterBills.where((element) => element.date.formatToMonthYear() == _selectedDate.formatToMonthYear()).toList().firstOrNull()?.amount ?? 0;
+        _electricBill = _electricBills
+                .where((element) =>
+                    element.date.formatToMonthYear() ==
+                    _selectedDate.formatToMonthYear())
+                .toList()
+                .firstOrNull()
+                ?.amount ??
+            0;
+        _waterBill = _waterBills
+                .where((element) =>
+                    element.date.formatToMonthYear() ==
+                    _selectedDate.formatToMonthYear())
+                .toList()
+                .firstOrNull()
+                ?.amount ??
+            0;
         _billReports.clear();
         var _bills = _persons.map((e) {
-          var currentMonthWaterReading = _waterReadings.where((element) => element.person?.id == e.id && element.date.formatToMonthYear() == _selectedDate.formatToMonthYear()).firstOrNull()?.reading ?? 0;
-          var currentMonthElectricReading = _electricReadings.where((element) => element.person?.id == e.id && element.date.formatToMonthYear() == _selectedDate.formatToMonthYear()).firstOrNull()?.reading ?? 0;
-          var previousMonthWaterReading = _waterReadings.where((element) => element.person?.id == e.id && element.date.formatToMonthYear() == _selectedDate.previousMonth().formatToMonthYear()).firstOrNull()?.reading ?? 0;
-          var previousMonthElectricReading = _electricReadings.where((element) => element.person?.id == e.id && element.date.formatToMonthYear() == _selectedDate.previousMonth().formatToMonthYear()).firstOrNull()?.reading ?? 0;
+          var currentMonthWaterReading = _waterReadings
+                  .where((element) =>
+                      element.person?.id == e.id &&
+                      element.date.formatToMonthYear() ==
+                          _selectedDate.formatToMonthYear())
+                  .firstOrNull()
+                  ?.reading ??
+              0;
+          var currentMonthElectricReading = _electricReadings
+                  .where((element) =>
+                      element.person?.id == e.id &&
+                      element.date.formatToMonthYear() ==
+                          _selectedDate.formatToMonthYear())
+                  .firstOrNull()
+                  ?.reading ??
+              0;
+          var previousMonthWaterReading = _waterReadings
+                  .where((element) =>
+                      element.person?.id == e.id &&
+                      element.date.formatToMonthYear() ==
+                          _selectedDate.previousMonth().formatToMonthYear())
+                  .firstOrNull()
+                  ?.reading ??
+              0;
+          var previousMonthElectricReading = _electricReadings
+                  .where((element) =>
+                      element.person?.id == e.id &&
+                      element.date.formatToMonthYear() ==
+                          _selectedDate.previousMonth().formatToMonthYear())
+                  .firstOrNull()
+                  ?.reading ??
+              0;
 
           return BillReport(
             person: e,
@@ -218,15 +264,25 @@ class _LandingPageState extends State<LandingPage> {
           );
         }).toList();
 
-        var waterConsumption = _bills.fold<int>(0, (previousValue, element) => previousValue + element.waterConsumption);
-        var electricConsumption = _bills.fold<int>(0, (previousValue, element) => previousValue + element.electricConsumption);
+        var waterConsumption = _bills.fold<int>(
+            0,
+            (previousValue, element) =>
+                previousValue + element.waterConsumption);
+        var electricConsumption = _bills.fold<int>(
+            0,
+            (previousValue, element) =>
+                previousValue + element.electricConsumption);
 
-        _waterBillPerReading = waterConsumption <= 0 ? 0 : (_waterBill / waterConsumption);
-        _electricBillPerReading = electricConsumption <= 0 ? 0 : (_electricBill / electricConsumption);
+        _waterBillPerReading =
+            waterConsumption <= 0 ? 0 : (_waterBill / waterConsumption);
+        _electricBillPerReading = electricConsumption <= 0
+            ? 0
+            : (_electricBill / electricConsumption);
 
         _billReports.addAll(_bills.map((e) {
           e.waterBillAmount = _waterBillPerReading * e.waterConsumption;
-          e.electricBillAmount = _electricBillPerReading * e.electricConsumption;
+          e.electricBillAmount =
+              _electricBillPerReading * e.electricConsumption;
           return e;
         }));
       });
@@ -272,20 +328,35 @@ class _LandingPageState extends State<LandingPage> {
       child: Table(children: [
         TableRow(
           children: <Widget>[
-            _buildTableChild("Total Incomes", fontSize: 18, color: Colors.green, fontWeight: FontWeight.w500),
-            _buildTableChild(_grandTotalIncome.format(), alignment: Alignment.centerRight, fontSize: 18, color: Colors.green, fontWeight: FontWeight.w500)
+            _buildTableChild("Total Incomes",
+                fontSize: 18, color: Colors.green, fontWeight: FontWeight.w500),
+            _buildTableChild(_grandTotalIncome.format(),
+                alignment: Alignment.centerRight,
+                fontSize: 18,
+                color: Colors.green,
+                fontWeight: FontWeight.w500)
           ],
         ),
         TableRow(
           children: <Widget>[
-            _buildTableChild("Total Expenses", fontSize: 18, color: Colors.red, fontWeight: FontWeight.w500),
-            _buildTableChild(_grandTotalExpenses.format(), alignment: Alignment.centerRight, fontSize: 18, color: Colors.red, fontWeight: FontWeight.w500)
+            _buildTableChild("Total Expenses",
+                fontSize: 18, color: Colors.red, fontWeight: FontWeight.w500),
+            _buildTableChild(_grandTotalExpenses.format(),
+                alignment: Alignment.centerRight,
+                fontSize: 18,
+                color: Colors.red,
+                fontWeight: FontWeight.w500)
           ],
         ),
         TableRow(
           children: <Widget>[
-            _buildTableChild("Total Balance", fontSize: 18, color: Colors.blue, fontWeight: FontWeight.w500),
-            _buildTableChild((_grandTotalIncome - _grandTotalExpenses).format(), alignment: Alignment.centerRight, fontSize: 18, color: Colors.blue, fontWeight: FontWeight.w500)
+            _buildTableChild("Total Balance",
+                fontSize: 18, color: Colors.blue, fontWeight: FontWeight.w500),
+            _buildTableChild((_grandTotalIncome - _grandTotalExpenses).format(),
+                alignment: Alignment.centerRight,
+                fontSize: 18,
+                color: Colors.blue,
+                fontWeight: FontWeight.w500)
           ],
         ),
       ]),
@@ -316,7 +387,11 @@ class _LandingPageState extends State<LandingPage> {
                 'Total Expenses : ',
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0),
               ),
-              Text(_totalExpenses.format(), style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold, color: Colors.red)),
+              Text(_totalExpenses.format(),
+                  style: TextStyle(
+                      fontSize: 16.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.red)),
             ],
           ),
           SizedBox(
@@ -393,7 +468,10 @@ class _LandingPageState extends State<LandingPage> {
                           'Bill : ',
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
-                        Text(_electricBill.format(), style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
+                        Text(_electricBill.format(),
+                            style: TextStyle(
+                                color: Colors.red,
+                                fontWeight: FontWeight.bold)),
                       ],
                     ),
                     Row(
@@ -427,10 +505,15 @@ class _LandingPageState extends State<LandingPage> {
                     .map((e) => TableRow(
                           children: <Widget>[
                             _buildTableChild(e.person?.name ?? ''),
-                            _buildTableChild(e.previousMonthElectricReading.toString(), alignment: Alignment.center),
-                            _buildTableChild(e.electricReading.toString(), alignment: Alignment.center),
-                            _buildTableChild(e.electricConsumption.toString(), alignment: Alignment.center),
-                            _buildTableChild(e.electricBillAmount.format(), alignment: Alignment.centerRight)
+                            _buildTableChild(
+                                e.previousMonthElectricReading.toString(),
+                                alignment: Alignment.center),
+                            _buildTableChild(e.electricReading.toString(),
+                                alignment: Alignment.center),
+                            _buildTableChild(e.electricConsumption.toString(),
+                                alignment: Alignment.center),
+                            _buildTableChild(e.electricBillAmount.format(),
+                                alignment: Alignment.centerRight)
                           ],
                         ))
                     .toList()
@@ -439,7 +522,10 @@ class _LandingPageState extends State<LandingPage> {
             SizedBox(
               height: 15.0,
             ),
-            Divider(thickness: 2, endIndent: MediaQuery.of(context).size.width / 8, indent: MediaQuery.of(context).size.width / 8),
+            Divider(
+                thickness: 2,
+                endIndent: MediaQuery.of(context).size.width / 8,
+                indent: MediaQuery.of(context).size.width / 8),
             SizedBox(
               height: 15.0,
             ),
@@ -463,7 +549,10 @@ class _LandingPageState extends State<LandingPage> {
                           'Bill : ',
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
-                        Text(_waterBill.format(), style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
+                        Text(_waterBill.format(),
+                            style: TextStyle(
+                                color: Colors.red,
+                                fontWeight: FontWeight.bold)),
                       ],
                     ),
                     Row(
@@ -497,10 +586,15 @@ class _LandingPageState extends State<LandingPage> {
                     .map((e) => TableRow(
                           children: <Widget>[
                             _buildTableChild(e.person?.name ?? ''),
-                            _buildTableChild(e.previousMonthWaterReading.toString(), alignment: Alignment.center),
-                            _buildTableChild(e.waterReading.toString(), alignment: Alignment.center),
-                            _buildTableChild(e.waterConsumption.toString(), alignment: Alignment.center),
-                            _buildTableChild(e.waterBillAmount.format(), alignment: Alignment.centerRight)
+                            _buildTableChild(
+                                e.previousMonthWaterReading.toString(),
+                                alignment: Alignment.center),
+                            _buildTableChild(e.waterReading.toString(),
+                                alignment: Alignment.center),
+                            _buildTableChild(e.waterConsumption.toString(),
+                                alignment: Alignment.center),
+                            _buildTableChild(e.waterBillAmount.format(),
+                                alignment: Alignment.centerRight)
                           ],
                         ))
                     .toList(),
@@ -509,7 +603,10 @@ class _LandingPageState extends State<LandingPage> {
             SizedBox(
               height: 15.0,
             ),
-            Divider(thickness: 2, endIndent: MediaQuery.of(context).size.width / 8, indent: MediaQuery.of(context).size.width / 8),
+            Divider(
+                thickness: 2,
+                endIndent: MediaQuery.of(context).size.width / 8,
+                indent: MediaQuery.of(context).size.width / 8),
             SizedBox(
               height: 15.0,
             ),
@@ -528,7 +625,8 @@ class _LandingPageState extends State<LandingPage> {
                   .map((e) => TableRow(
                         children: <Widget>[
                           _buildTableChild(e.person?.name ?? ''),
-                          _buildTableChild(e.totalBillAmount.format(), alignment: Alignment.centerRight)
+                          _buildTableChild(e.totalBillAmount.format(),
+                              alignment: Alignment.centerRight)
                         ],
                       ))
                   .toList(),
@@ -547,7 +645,8 @@ class _LandingPageState extends State<LandingPage> {
         ));
   }
 
-  _buildTableHeader(String title, {Alignment alignment = Alignment.centerLeft}) {
+  _buildTableHeader(String title,
+      {Alignment alignment = Alignment.centerLeft}) {
     return Container(
       child: Text(
         title,
@@ -560,18 +659,24 @@ class _LandingPageState extends State<LandingPage> {
     );
   }
 
-  _buildTableChild(String title, {Alignment alignment = Alignment.centerLeft, double fontSize = 10, FontWeight fontWeight = FontWeight.normal, Color? color}) {
+  _buildTableChild(String title,
+      {Alignment alignment = Alignment.centerLeft,
+      double fontSize = 10,
+      FontWeight fontWeight = FontWeight.normal,
+      Color? color}) {
     return Container(
       padding: EdgeInsets.all(5),
       alignment: alignment,
       child: Text(
         title,
-        style: TextStyle(fontSize: fontSize, fontWeight: fontWeight, color: color),
+        style:
+            TextStyle(fontSize: fontSize, fontWeight: fontWeight, color: color),
       ),
     );
   }
 
-  _buildPDFTableHeader(String title, {pw.Alignment alignment = pw.Alignment.centerLeft}) {
+  _buildPDFTableHeader(String title,
+      {pw.Alignment alignment = pw.Alignment.centerLeft}) {
     return pw.Container(
       child: pw.Text(
         title,
@@ -584,13 +689,18 @@ class _LandingPageState extends State<LandingPage> {
     );
   }
 
-  _buildPDFTableChild(String title, {pw.Alignment alignment = pw.Alignment.centerLeft, double fontSize = 12, pw.FontWeight fontWeight = pw.FontWeight.normal, PdfColor? color}) {
+  _buildPDFTableChild(String title,
+      {pw.Alignment alignment = pw.Alignment.centerLeft,
+      double fontSize = 12,
+      pw.FontWeight fontWeight = pw.FontWeight.normal,
+      PdfColor? color}) {
     return pw.Container(
       padding: pw.EdgeInsets.all(5),
       alignment: alignment,
       child: pw.Text(
         title,
-        style: pw.TextStyle(fontSize: fontSize, fontWeight: fontWeight, color: color),
+        style: pw.TextStyle(
+            fontSize: fontSize, fontWeight: fontWeight, color: color),
       ),
     );
   }
@@ -614,7 +724,11 @@ class _LandingPageState extends State<LandingPage> {
   }
 
   _printBillReport() async {
-    Navigator.of(context).pushNamed(FolderBrowser.route, arguments: FolderArguments(file: await _generatePDF(), ext: 'pdf', filename: _ctrlDate.text.replaceAll(' ', '')));
+    Navigator.of(context).pushNamed(FolderBrowser.route,
+        arguments: FolderArguments(
+            file: await _generatePDF(),
+            ext: 'pdf',
+            filename: _ctrlDate.text.replaceAll(' ', '')));
   }
 
   _generatePDF() async {
@@ -625,7 +739,9 @@ class _LandingPageState extends State<LandingPage> {
         pageFormat: PdfPageFormat.legal,
         build: (pw.Context context) {
           return pw.Column(children: [
-            pw.Text('Monthly Bill Report', style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 25)),
+            pw.Text('Monthly Bill Report',
+                style:
+                    pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 25)),
             pw.SizedBox(height: 15.0),
             pw.Text(_ctrlDate.text, style: pw.TextStyle(fontSize: 18)),
             pw.SizedBox(height: 15.0),
@@ -635,7 +751,8 @@ class _LandingPageState extends State<LandingPage> {
             pw.Container(
               child: pw.Text(
                 'Electric Bill',
-                style: pw.TextStyle(fontSize: 20, fontWeight: pw.FontWeight.normal),
+                style: pw.TextStyle(
+                    fontSize: 20, fontWeight: pw.FontWeight.normal),
               ),
               alignment: pw.Alignment.centerLeft,
             ),
@@ -651,7 +768,10 @@ class _LandingPageState extends State<LandingPage> {
                         'Bill : ',
                         style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
                       ),
-                      pw.Text(_electricBill.format(), style: pw.TextStyle(color: PdfColor.fromHex('F00'), fontWeight: pw.FontWeight.bold)),
+                      pw.Text(_electricBill.format(),
+                          style: pw.TextStyle(
+                              color: PdfColor.fromHex('F00'),
+                              fontWeight: pw.FontWeight.bold)),
                     ],
                   ),
                   pw.Row(
@@ -673,21 +793,30 @@ class _LandingPageState extends State<LandingPage> {
               children: [
                 pw.TableRow(
                   children: [
-                    _buildPDFTableHeader('Name', alignment: pw.Alignment.center),
+                    _buildPDFTableHeader('Name',
+                        alignment: pw.Alignment.center),
                     _buildPDFTableHeader('Old', alignment: pw.Alignment.center),
                     _buildPDFTableHeader('New', alignment: pw.Alignment.center),
-                    _buildPDFTableHeader('Reading', alignment: pw.Alignment.center),
-                    _buildPDFTableHeader('Amount', alignment: pw.Alignment.center),
+                    _buildPDFTableHeader('Reading',
+                        alignment: pw.Alignment.center),
+                    _buildPDFTableHeader('Amount',
+                        alignment: pw.Alignment.center),
                   ],
                 ),
                 ..._billReports
                     .map((e) => pw.TableRow(
                           children: [
                             _buildPDFTableChild(e.person?.name ?? ''),
-                            _buildPDFTableChild(e.previousMonthElectricReading.toString(), alignment: pw.Alignment.center),
-                            _buildPDFTableChild(e.electricReading.toString(), alignment: pw.Alignment.center),
-                            _buildPDFTableChild(e.electricConsumption.toString(), alignment: pw.Alignment.center),
-                            _buildPDFTableChild(e.electricBillAmount.format(), alignment: pw.Alignment.centerRight)
+                            _buildPDFTableChild(
+                                e.previousMonthElectricReading.toString(),
+                                alignment: pw.Alignment.center),
+                            _buildPDFTableChild(e.electricReading.toString(),
+                                alignment: pw.Alignment.center),
+                            _buildPDFTableChild(
+                                e.electricConsumption.toString(),
+                                alignment: pw.Alignment.center),
+                            _buildPDFTableChild(e.electricBillAmount.format(),
+                                alignment: pw.Alignment.centerRight)
                           ],
                         ))
                     .toList()
@@ -703,7 +832,8 @@ class _LandingPageState extends State<LandingPage> {
             pw.Container(
               child: pw.Text(
                 'Water Bill',
-                style: pw.TextStyle(fontSize: 20, fontWeight: pw.FontWeight.normal),
+                style: pw.TextStyle(
+                    fontSize: 20, fontWeight: pw.FontWeight.normal),
               ),
               alignment: pw.Alignment.centerLeft,
             ),
@@ -720,7 +850,10 @@ class _LandingPageState extends State<LandingPage> {
                           'Bill : ',
                           style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
                         ),
-                        pw.Text(_waterBill.format(), style: pw.TextStyle(color: PdfColor.fromHex('F00'), fontWeight: pw.FontWeight.bold)),
+                        pw.Text(_waterBill.format(),
+                            style: pw.TextStyle(
+                                color: PdfColor.fromHex('F00'),
+                                fontWeight: pw.FontWeight.bold)),
                       ],
                     ),
                     pw.Row(
@@ -743,21 +876,29 @@ class _LandingPageState extends State<LandingPage> {
               children: [
                 pw.TableRow(
                   children: [
-                    _buildPDFTableHeader('Name', alignment: pw.Alignment.center),
+                    _buildPDFTableHeader('Name',
+                        alignment: pw.Alignment.center),
                     _buildPDFTableHeader('Old', alignment: pw.Alignment.center),
                     _buildPDFTableHeader('New', alignment: pw.Alignment.center),
-                    _buildPDFTableHeader('Reading', alignment: pw.Alignment.center),
-                    _buildPDFTableHeader('Amount', alignment: pw.Alignment.center),
+                    _buildPDFTableHeader('Reading',
+                        alignment: pw.Alignment.center),
+                    _buildPDFTableHeader('Amount',
+                        alignment: pw.Alignment.center),
                   ],
                 ),
                 ..._billReports
                     .map((e) => pw.TableRow(
                           children: [
                             _buildPDFTableChild(e.person?.name ?? ''),
-                            _buildPDFTableChild(e.previousMonthWaterReading.toString(), alignment: pw.Alignment.center),
-                            _buildPDFTableChild(e.waterReading.toString(), alignment: pw.Alignment.center),
-                            _buildPDFTableChild(e.waterConsumption.toString(), alignment: pw.Alignment.center),
-                            _buildPDFTableChild(e.waterBillAmount.format(), alignment: pw.Alignment.centerRight)
+                            _buildPDFTableChild(
+                                e.previousMonthWaterReading.toString(),
+                                alignment: pw.Alignment.center),
+                            _buildPDFTableChild(e.waterReading.toString(),
+                                alignment: pw.Alignment.center),
+                            _buildPDFTableChild(e.waterConsumption.toString(),
+                                alignment: pw.Alignment.center),
+                            _buildPDFTableChild(e.waterBillAmount.format(),
+                                alignment: pw.Alignment.centerRight)
                           ],
                         ))
                     .toList(),
@@ -773,7 +914,8 @@ class _LandingPageState extends State<LandingPage> {
             pw.Container(
               child: pw.Text(
                 'Total Bill',
-                style: pw.TextStyle(fontSize: 20, fontWeight: pw.FontWeight.normal),
+                style: pw.TextStyle(
+                    fontSize: 20, fontWeight: pw.FontWeight.normal),
               ),
               alignment: pw.Alignment.centerLeft,
             ),
@@ -785,7 +927,8 @@ class _LandingPageState extends State<LandingPage> {
                   .map((e) => pw.TableRow(
                         children: [
                           _buildPDFTableChild(e.person?.name ?? ''),
-                          _buildPDFTableChild(e.totalBillAmount.format(), alignment: pw.Alignment.centerRight)
+                          _buildPDFTableChild(e.totalBillAmount.format(),
+                              alignment: pw.Alignment.centerRight)
                         ],
                       ))
                   .toList(),
@@ -815,7 +958,9 @@ class _LandingPageState extends State<LandingPage> {
               title: 'Backup',
               icon: Icons.file_download,
               isLoading: _backuping,
-              onTap: context.watch<GoogleProvider>().isLoggedIn && !_backuping ? _backupData : null,
+              onTap: context.watch<GoogleProvider>().isLoggedIn && !_backuping
+                  ? _backupData
+                  : null,
             ),
             SizedBox(
               height: 10.0,
@@ -824,7 +969,9 @@ class _LandingPageState extends State<LandingPage> {
               title: 'Restore',
               icon: Icons.file_upload,
               isLoading: _restoring,
-              onTap: context.watch<GoogleProvider>().isLoggedIn && !_backuping ? _restoreData : null,
+              onTap: context.watch<GoogleProvider>().isLoggedIn && !_backuping
+                  ? _restoreData
+                  : null,
             ),
           ],
         ));
@@ -853,7 +1000,8 @@ class _LandingPageState extends State<LandingPage> {
 
       String backupData = jsonEncode(_backup);
 
-      await context.read<GoogleProvider>().createFile("Backups", "${DateTime.now().backupDate()}.jpmb", backupData);
+      await context.read<GoogleProvider>().createFile(
+          "Backups", "${DateTime.now().backupDate()}.jpmb", backupData);
       // await Navigator.of(context).pushNamed(FolderBrowser.route, arguments: FolderArguments(isText: true, text: backupData, ext: 'jpmb', filename: DateTime.now().backupDate()));
     } catch (e) {} finally {
       setState(() {
@@ -867,7 +1015,8 @@ class _LandingPageState extends State<LandingPage> {
       _restoring = true;
     });
     try {
-      var data = await Navigator.of(context).pushNamed(FolderBrowser.route, arguments: FolderArguments(openFile: true, ext: 'jpmb'));
+      var data = await Navigator.of(context).pushNamed(FolderBrowser.route,
+          arguments: FolderArguments(openFile: true, ext: 'jpmb'));
       if (data != null) {
         var file = File((data as String));
         var read = await file.readAsString();

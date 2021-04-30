@@ -16,10 +16,22 @@ class MainDrawer extends StatefulWidget {
 
 class _MainDrawerState extends State<MainDrawer> {
   List<Menu> _menuItems = [
-    Menu(icon: Icon(Icons.home_outlined), location: 'Dashboard', route: LandingPage.route),
-    Menu(icon: Icon(Icons.attach_money_outlined), location: 'Incomes', route: Incomes.route),
-    Menu(icon: Icon(Icons.money_off_outlined), location: 'Expenses', route: Expenses.route),
-    Menu(icon: Icon(Icons.payments_outlined), location: 'Bill', route: Bills.route),
+    Menu(
+        icon: Icon(Icons.home_outlined),
+        location: 'Dashboard',
+        route: LandingPage.route),
+    Menu(
+        icon: Icon(Icons.attach_money_outlined),
+        location: 'Incomes',
+        route: Incomes.route),
+    Menu(
+        icon: Icon(Icons.money_off_outlined),
+        location: 'Expenses',
+        route: Expenses.route),
+    Menu(
+        icon: Icon(Icons.payments_outlined),
+        location: 'Bill',
+        route: Bills.route),
   ];
 
   @override
@@ -39,7 +51,12 @@ class _MainDrawerState extends State<MainDrawer> {
                 margin: EdgeInsets.all(15.0),
                 height: 70,
                 width: 70,
-                child: ClipOval(child: context.watch<GoogleProvider>().user?.photoUrl == null ? Image.asset('asset/user.png') : Image.network(context.watch<GoogleProvider>().user!.photoUrl!)),
+                child: ClipOval(
+                    child: context.watch<GoogleProvider>().user?.photoUrl ==
+                            null
+                        ? Image.asset('asset/user.png')
+                        : Image.network(
+                            context.watch<GoogleProvider>().user!.photoUrl!)),
                 // child: ClipOval(child: context.watch<User>().imageUrl == null ? Image.asset('asset/user.png') : Image.network(context.watch<User>().imageUrl!)),
               ),
               Expanded(
@@ -49,14 +66,15 @@ class _MainDrawerState extends State<MainDrawer> {
                   mainAxisSize: MainAxisSize.max,
                   children: [
                     context.watch<GoogleProvider>().isLoggedIn
-                      ? Text(
-                            context.watch<GoogleProvider>().user?.displayName ?? '', 
-                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                        ? Text(
+                            context.watch<GoogleProvider>().user?.displayName ??
+                                '',
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 20),
                             softWrap: true,
                           )
-                          :Text('Login to view data'),
-                    if (
-                    context.watch<GoogleProvider>().isLoggedIn)
+                        : Text('Login to view data'),
+                    if (context.watch<GoogleProvider>().isLoggedIn)
                       Text(
                         context.watch<GoogleProvider>().user?.email ?? '',
                         softWrap: true,

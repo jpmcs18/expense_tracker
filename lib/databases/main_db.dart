@@ -178,7 +178,6 @@ class MainDB {
   }
 
   Future clearDB() async {
-    
     Database d = (await db)!;
     await d.execute("DROP TABLE IF EXISTS tableName");
     await d.execute('DROP TABLE IF EXISTS ${IncomeTypeHelper.tblName}');
@@ -192,7 +191,7 @@ class MainDB {
     await d.execute('DROP TABLE IF EXISTS ${ItemHelper.tblName}');
     await d.execute('DROP TABLE IF EXISTS ${ExpenseHelper.tblName}');
     await d.execute('DROP TABLE IF EXISTS ${ExpenseDetailsHelper.tblName}');
-    
+
     await _generateExpensesTables(d);
     await _generateBillsTables(d);
     await _generateIncomesTables(d);

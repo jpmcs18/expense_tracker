@@ -65,7 +65,8 @@ class MyApp extends StatelessWidget {
           case Incomes.route:
             return _buildRoute(setting, Incomes());
           case FolderBrowser.route:
-            return _buildRoute(setting, FolderBrowser(args: setting.arguments as FolderArguments));
+            return _buildRoute(setting,
+                FolderBrowser(args: setting.arguments as FolderArguments));
           default:
             return _buildRoute(setting, LandingPage());
         }
